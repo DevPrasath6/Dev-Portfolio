@@ -126,8 +126,8 @@ export function Hero({ name, title, subtitle, setActivePage, certifications }: H
             className="grid grid-cols-3 gap-8 max-w-2xl mx-auto mb-16"
           >
             {stats.map((stat, index) => (
-              <motion.div 
-                key={stat.label} 
+              <motion.div
+                key={stat.label}
                 className="text-center"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -147,9 +147,9 @@ export function Hero({ name, title, subtitle, setActivePage, certifications }: H
             className="flex items-center justify-center gap-4"
           >
             {[
-              { icon: Github, href: "#", label: "GitHub" },
-              { icon: Linkedin, href: "#", label: "LinkedIn" },
-              { icon: Mail, href: "#", label: "Email" },
+              { icon: Github, href: "https://github.com/DevPrasath6/", label: "GitHub" },
+              { icon: Linkedin, href: "https://www.linkedin.com/in/devprasatha9/", label: "LinkedIn" },
+              { icon: Mail, href: "devprasatha9@gmail.com", label: "Email" },
             ].map((social) => (
               <motion.a
                 key={social.label}

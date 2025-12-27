@@ -62,13 +62,13 @@ export const getHero = async (req, res) => {
 export const updateHero = async (req, res) => {
   try {
     let hero = await Hero.findOne({ userId: req.user._id });
-    
+
     if (hero) {
       hero = await Hero.findByIdAndUpdate(hero._id, req.body, { new: true });
     } else {
       hero = await Hero.create({ ...req.body, userId: req.user._id });
     }
-    
+
     res.json(hero);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -290,13 +290,13 @@ export const getContact = async (req, res) => {
 export const updateContact = async (req, res) => {
   try {
     let contact = await Contact.findOne({ userId: req.user._id });
-    
+
     if (contact) {
       contact = await Contact.findByIdAndUpdate(contact._id, req.body, { new: true });
     } else {
       contact = await Contact.create({ ...req.body, userId: req.user._id });
     }
-    
+
     res.json(contact);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });

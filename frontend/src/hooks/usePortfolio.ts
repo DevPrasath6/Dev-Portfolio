@@ -157,9 +157,9 @@ const defaultData: PortfolioData = {
     },
   ],
   contact: {
-    email: "hello@johndoe.com",
-    linkedin: "https://linkedin.com/in/johndoe",
-    github: "https://github.com/johndoe",
+    email: "devprasatha9@gmail.com",
+    linkedin: "https://linkedin.com/in/devprasatha9",
+    github: "https://github.com/DevPrasath6",
   },
 };
 
