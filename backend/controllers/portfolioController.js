@@ -15,7 +15,16 @@ import Certification from '../models/Certification.js';
 export const getPortfolio = async (req, res) => {
   try {
     const hero = await Hero.findOne().sort({ createdAt: -1 });
-    const projects = await Project.find().sort({ order: 1, createdAt: -1 });
+    const projectsRaw = await Project.find().sort({ order: 1, createdAt: -1 });
+    const projects = projectsRaw.map(p => ({
+      id: p._id,
+      title: p.title,
+      description: p.description,
+      imageUrl: p.imageUrl,
+      tags: Array.isArray(p.tags) ? p.tags : [],
+      liveUrl: p.liveUrl,
+      githubUrl: p.githubUrl
+    }));
     const experiences = await Experience.find().sort({ order: 1, createdAt: -1 });
     const skills = await Skill.find();
     const testimonials = await Testimonial.find();
@@ -70,7 +79,16 @@ export const updateHero = async (req, res) => {
 
 export const getProjects = async (req, res) => {
   try {
-    const projects = await Project.find({ userId: req.user._id }).sort({ order: 1 });
+    const projectsRaw = await Project.find({ userId: req.user._id }).sort({ order: 1 });
+    const projects = projectsRaw.map(p => ({
+      id: p._id,
+      title: p.title,
+      description: p.description,
+      imageUrl: p.imageUrl,
+      tags: Array.isArray(p.tags) ? p.tags : [],
+      liveUrl: p.liveUrl,
+      githubUrl: p.githubUrl
+    }));
     res.json(projects);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
