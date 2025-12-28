@@ -42,7 +42,7 @@ const Admin = () => {
         deleteProject,
         addExperience,
         deleteExperience,
-        updateExperiences,
+        updateExperience,
         // ...existing code...
     } = usePortfolio();
     const { toast } = useToast();
@@ -166,18 +166,21 @@ const Admin = () => {
     };
 
     // Experience handlers
-    const handleAddExperience = () => {
+    const handleAddExperience = async () => {
         if (!newExperience.title || !newExperience.company) {
             toast({ title: 'Please fill in title and company', variant: 'destructive' });
             return;
         }
-        addExperience(newExperience);
+        await addExperience(newExperience);
+        // Refetch experiences from backend
+        await refetchExperiences();
         setNewExperience({ title: '', company: '', period: '', description: '', current: false });
         toast({ title: 'Experience added!' });
     };
 
-    const handleDeleteExperience = (id: string) => {
-        deleteExperience(id);
+    const handleDeleteExperience = async (id: string) => {
+        await deleteExperience(id);
+        await refetchExperiences();
         toast({ title: 'Experience deleted' });
     };
 
@@ -186,15 +189,23 @@ const Admin = () => {
         setEditExperienceData({ ...exp });
     };
 
-    const handleSaveEditExperience = () => {
+    const handleSaveEditExperience = async () => {
         if (editExperienceData) {
-            const updated = data.experiences.map(e =>
-                e.id === editExperienceData.id ? editExperienceData : e
-            );
-            updateExperiences(updated);
+            await updateExperience(editExperienceData.id, editExperienceData);
+            await refetchExperiences();
             setEditingExperience(null);
             setEditExperienceData(null);
             toast({ title: 'Experience updated!' });
+        }
+    };
+    // Refetch experiences from backend and update state
+    const refetchExperiences = async () => {
+        try {
+            const experiences = await portfolioApi.admin.getExperiences();
+            // update local state with new experiences
+            data.experiences = experiences;
+        } catch (err) {
+            toast({ title: 'Failed to fetch experiences', variant: 'destructive' });
         }
     };
 

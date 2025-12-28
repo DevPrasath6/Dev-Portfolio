@@ -137,18 +137,20 @@ export const deleteProject = async (req, res) => {
 export const getExperiences = async (req, res) => {
   try {
     const experiences = await Experience.find({ userId: req.user._id }).sort({ order: 1 });
-    res.json(experiences);
+    res.json({ success: true, data: experiences });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Error fetching experiences:', error);
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 };
 
 export const createExperience = async (req, res) => {
   try {
     const experience = await Experience.create({ ...req.body, userId: req.user._id });
-    res.status(201).json(experience);
+    res.status(201).json({ success: true, data: experience });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Error creating experience:', error);
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 };
 
@@ -160,11 +162,12 @@ export const updateExperience = async (req, res) => {
       { new: true }
     );
     if (!experience) {
-      return res.status(404).json({ message: 'Experience not found' });
+      return res.status(404).json({ success: false, message: 'Experience not found' });
     }
-    res.json(experience);
+    res.json({ success: true, data: experience });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Error updating experience:', error);
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 };
 
@@ -172,11 +175,12 @@ export const deleteExperience = async (req, res) => {
   try {
     const experience = await Experience.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
     if (!experience) {
-      return res.status(404).json({ message: 'Experience not found' });
+      return res.status(404).json({ success: false, message: 'Experience not found' });
     }
-    res.json({ message: 'Experience deleted' });
+    res.json({ success: true, message: 'Experience deleted' });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    console.error('Error deleting experience:', error);
+    res.status(500).json({ success: false, message: 'Server error', error: error.message });
   }
 };
 

@@ -59,7 +59,7 @@ export interface PortfolioData {
 
 const defaultData: PortfolioData = {
   hero: {
-    name: "John Doe",
+    name: "Dev Prasath",
     title: "Full Stack Developer",
     subtitle: "I craft beautiful digital experiences with code and creativity, turning ideas into powerful web applications",
   },
@@ -257,6 +257,21 @@ export function usePortfolio() {
     }
   };
 
+    // Update a single experience by ID
+    const updateExperience = async (id: string, updates: Partial<ExperienceItem>) => {
+      try {
+        const updated = await portfolioApi.admin.updateExperience(id, updates);
+        setData(prev => ({
+          ...prev,
+          experiences: prev.experiences.map(e => e.id === id ? { ...e, ...updated } : e),
+        }));
+        return updated;
+      } catch (err) {
+        console.error('Failed to update experience:', err);
+        throw err;
+      }
+    };
+
   const updateTestimonials = async (testimonials: Testimonial[]) => {
     try {
       setData(prev => ({ ...prev, testimonials }));
@@ -313,11 +328,11 @@ export function usePortfolio() {
     }
   };
 
-  const addExperience = async (exp: Omit<ExperienceItem, 'id'>) => {
+  const addExperience = async (experience: Omit<ExperienceItem, 'id'>) => {
     try {
-      const newExp = await portfolioApi.admin.createExperience(exp);
-      setData(prev => ({ ...prev, experiences: [...prev.experiences, newExp] }));
-      return newExp;
+      const newExperience = await portfolioApi.admin.createExperience(experience);
+      setData(prev => ({ ...prev, experiences: [...prev.experiences, newExperience] }));
+      return newExperience;
     } catch (err) {
       console.error('Failed to add experience:', err);
       throw err;
@@ -396,7 +411,7 @@ export function usePortfolio() {
     updateHero,
     updateAbout,
     updateSkills,
-    updateExperiences,
+    updateExperience,
     updateTestimonials,
     updateContact,
     addProject,
