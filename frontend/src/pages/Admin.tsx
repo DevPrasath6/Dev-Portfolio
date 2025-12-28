@@ -40,9 +40,11 @@ const Admin = () => {
         addProject,
         updateProject,
         deleteProject,
+        setProjects,
         addExperience,
         deleteExperience,
         updateExperience,
+        setExperiences,
         // ...existing code...
     } = usePortfolio();
     const { toast } = useToast();
@@ -107,14 +109,18 @@ const Admin = () => {
     };
 
     // Project handlers
-    const handleAddProject = () => {
+    const handleAddProject = async () => {
         if (!newProject.title || !newProject.description) {
             toast({ title: 'Please fill in title and description', variant: 'destructive' });
             return;
         }
-        addProject(newProject);
-        setNewProject({ title: '', description: '', imageUrl: '', tags: [], liveUrl: '', githubUrl: '' });
-        toast({ title: 'Project added!' });
+        try {
+            await addProject(newProject);
+            setNewProject({ title: '', description: '', imageUrl: '', tags: [], liveUrl: '', githubUrl: '' });
+            toast({ title: 'Project added!' });
+        } catch (error) {
+            toast({ title: 'Failed to add project', variant: 'destructive' });
+        }
     };
 
     const handleAddTag = () => {
@@ -128,9 +134,13 @@ const Admin = () => {
         setNewProject(prev => ({ ...prev, tags: prev.tags.filter((_, i) => i !== index) }));
     };
 
-    const handleDeleteProject = (id: string) => {
-        deleteProject(id);
-        toast({ title: 'Project deleted' });
+    const handleDeleteProject = async (id: string) => {
+        try {
+            await deleteProject(id);
+            toast({ title: 'Project deleted' });
+        } catch (error) {
+            toast({ title: 'Failed to delete project', variant: 'destructive' });
+        }
     };
 
     const handleEditProject = (project: Project) => {
@@ -138,12 +148,16 @@ const Admin = () => {
         setEditProjectData({ ...project });
     };
 
-    const handleSaveEditProject = () => {
+    const handleSaveEditProject = async () => {
         if (editProjectData) {
-            updateProject(editProjectData.id, editProjectData);
-            setEditingProject(null);
-            setEditProjectData(null);
-            toast({ title: 'Project updated!' });
+            try {
+                await updateProject(editProjectData.id, editProjectData);
+                setEditingProject(null);
+                setEditProjectData(null);
+                toast({ title: 'Project updated!' });
+            } catch (error) {
+                toast({ title: 'Failed to update project', variant: 'destructive' });
+            }
         }
     };
 
@@ -179,9 +193,13 @@ const Admin = () => {
     };
 
     const handleDeleteExperience = async (id: string) => {
-        await deleteExperience(id);
-        await refetchExperiences();
-        toast({ title: 'Experience deleted' });
+        try {
+            await deleteExperience(id);
+            await refetchExperiences();
+            toast({ title: 'Experience deleted' });
+        } catch (error) {
+            toast({ title: 'Failed to delete experience', variant: 'destructive' });
+        }
     };
 
     const handleEditExperience = (exp: ExperienceItem) => {
@@ -191,11 +209,15 @@ const Admin = () => {
 
     const handleSaveEditExperience = async () => {
         if (editExperienceData) {
-            await updateExperience(editExperienceData.id, editExperienceData);
-            await refetchExperiences();
-            setEditingExperience(null);
-            setEditExperienceData(null);
-            toast({ title: 'Experience updated!' });
+            try {
+                await updateExperience(editExperienceData.id, editExperienceData);
+                await refetchExperiences();
+                setEditingExperience(null);
+                setEditExperienceData(null);
+                toast({ title: 'Experience updated!' });
+            } catch (error) {
+                toast({ title: 'Failed to update experience', variant: 'destructive' });
+            }
         }
     };
     // Refetch experiences from backend and update state
@@ -203,7 +225,7 @@ const Admin = () => {
         try {
             const experiences = await portfolioApi.admin.getExperiences();
             // update local state with new experiences
-            data.experiences = experiences;
+            setExperiences(experiences);
         } catch (err) {
             toast({ title: 'Failed to fetch experiences', variant: 'destructive' });
         }

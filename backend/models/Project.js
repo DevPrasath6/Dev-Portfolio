@@ -13,7 +13,7 @@ const projectSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  technologies: [{
+  tags: [{
     type: String
   }],
   liveUrl: {

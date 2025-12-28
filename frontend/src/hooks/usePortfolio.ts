@@ -404,6 +404,14 @@ export function usePortfolio() {
     }
   };
 
+  const setExperiences = (experiences: ExperienceItem[]) => {
+    setData(prev => ({ ...prev, experiences }));
+  };
+
+  const setProjects = (projects: Project[]) => {
+    setData(prev => ({ ...prev, projects }));
+  };
+
   return {
     data,
     loading,
@@ -417,8 +425,10 @@ export function usePortfolio() {
     addProject,
     updateProject,
     deleteProject,
+    setProjects,
     addExperience,
     deleteExperience,
+    setExperiences,
     addSkill,
     deleteSkill,
     addTestimonial,

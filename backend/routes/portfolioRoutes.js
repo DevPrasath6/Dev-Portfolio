@@ -21,66 +21,66 @@ router.get('/', getPortfolio);
 
 // Hero
 router.route('/admin/hero')
-  .get(protect, adminOnly, getHero)
-  .put(protect, adminOnly, updateHero);
+  .get(protect, getHero)
+  .put(protect, updateHero);
 
 // Projects
 router.route('/admin/projects')
-  .get(protect, adminOnly, getProjects)
-  .post(protect, adminOnly, createProject);
+  .get(protect, getProjects)
+  .post(protect, createProject);
 
 router.route('/admin/projects/:id')
-  .put(protect, adminOnly, updateProject)
+  .put(protect, updateProject)
   .delete(protect, adminOnly, deleteProject);
 
 // Experiences
 router.route('/admin/experiences')
-  .get(protect, adminOnly, getExperiences)
-  .post(protect, adminOnly, createExperience);
+  .get(protect, getExperiences)
+  .post(protect, createExperience);
 
 router.route('/admin/experiences/:id')
-  .put(protect, adminOnly, updateExperience)
-  .delete(protect, adminOnly, deleteExperience);
+  .put(protect, updateExperience)
+  .delete(protect, deleteExperience);
 
 // Skills
 router.route('/admin/skills')
-  .get(protect, adminOnly, getSkills)
-  .post(protect, adminOnly, createSkill);
+  .get(protect, getSkills)
+  .post(protect, createSkill);
 
 router.route('/admin/skills/:id')
-  .put(protect, adminOnly, updateSkill)
-  .delete(protect, adminOnly, deleteSkill);
+  .put(protect, updateSkill)
+  .delete(protect, deleteSkill);
 
 // Testimonials
 router.route('/admin/testimonials')
-  .get(protect, adminOnly, getTestimonials)
-  .post(protect, adminOnly, createTestimonial);
+  .get(protect, getTestimonials)
+  .post(protect, createTestimonial);
 
 router.route('/admin/testimonials/:id')
-  .put(protect, adminOnly, updateTestimonial)
-  .delete(protect, adminOnly, deleteTestimonial);
+  .put(protect, updateTestimonial)
+  .delete(protect, deleteTestimonial);
 
 // Contact
 router.route('/admin/contact')
-  .get(protect, adminOnly, getContact)
-  .put(protect, adminOnly, updateContact);
+  .get(protect, getContact)
+  .put(protect, updateContact);
 
 // Education
 router.route('/admin/education')
-  .get(protect, adminOnly, getEducation)
-  .post(protect, adminOnly, createEducation);
+  .get(protect, getEducation)
+  .post(protect, createEducation);
 
 router.route('/admin/education/:id')
-  .put(protect, adminOnly, updateEducation)
-  .delete(protect, adminOnly, deleteEducation);
+  .put(protect, updateEducation)
+  .delete(protect, deleteEducation);
 
 // Certifications
 router.route('/admin/certifications')
-  .get(protect, adminOnly, getCertifications)
-  .post(protect, adminOnly, createCertification);
+  .get(protect, getCertifications)
+  .post(protect, createCertification);
 
 router.route('/admin/certifications/:id')
-  .put(protect, adminOnly, updateCertification)
-  .delete(protect, adminOnly, deleteCertification);
+  .put(protect, updateCertification)
+  .delete(protect, deleteCertification);
 
 export default router;
