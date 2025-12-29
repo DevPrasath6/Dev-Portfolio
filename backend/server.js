@@ -16,7 +16,7 @@ const app = express();
 app.use(cors({
   origin: [
     process.env.CLIENT_URL || 'http://localhost:5173',
-    'https://dev-portfolio-zeta-mauve.vercel.app'
+    'https://devprasath.vercel.app'
   ],
   credentials: true
 }));
