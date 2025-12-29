@@ -28,9 +28,9 @@ export function Hero({ name, title, subtitle, setActivePage, certifications }: H
     }, []);
 
     const stats = [
-        { value: "7+", label: "Years Experience" },
-        { value: "100+", label: "Projects Delivered" },
-        { value: "50+", label: "Happy Clients" },
+        { value: "2+", label: "Years Experience" },
+        { value: "10", label: "Projects Delivered" },
+        { value: "7", label: "Happy Clients" },
     ];
 
     return (
