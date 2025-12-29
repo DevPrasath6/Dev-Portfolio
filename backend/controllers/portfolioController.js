@@ -6,6 +6,7 @@ import Testimonial from '../models/Testimonial.js';
 import Contact from '../models/Contact.js';
 import Education from '../models/Education.js';
 import Certification from '../models/Certification.js';
+import Achievement from '../models/Achievement.js';
 
 // ==================== PUBLIC ROUTES ====================
 
@@ -42,6 +43,7 @@ export const getPortfolio = async (req, res) => {
     const contact = await Contact.findOne().sort({ createdAt: -1 });
     const education = await Education.find().sort({ order: 1, createdAt: -1 });
     const certifications = await Certification.find().sort({ createdAt: -1 });
+    const achievements = await Achievement.find().sort({ order: 1, createdAt: -1 });
 
     res.json({
       hero,
@@ -51,7 +53,8 @@ export const getPortfolio = async (req, res) => {
       testimonials,
       contact,
       education,
-      certifications
+      certifications,
+      achievements
     });
   } catch (error) {
     console.error('Get portfolio error:', error);
@@ -443,6 +446,54 @@ export const deleteCertification = async (req, res) => {
       return res.status(404).json({ message: 'Certification not found' });
     }
     res.json({ message: 'Certification deleted' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// ==================== ACHIEVEMENTS ====================
+
+export const getAchievements = async (req, res) => {
+  try {
+    const achievements = await Achievement.find({ userId: req.user._id }).sort({ order: 1 });
+    res.json(achievements);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+export const createAchievement = async (req, res) => {
+  try {
+    const achievement = await Achievement.create({ ...req.body, userId: req.user._id });
+    res.status(201).json(achievement);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+export const updateAchievement = async (req, res) => {
+  try {
+    const achievement = await Achievement.findOneAndUpdate(
+      { _id: req.params.id, userId: req.user._id },
+      req.body,
+      { new: true }
+    );
+    if (!achievement) {
+      return res.status(404).json({ message: 'Achievement not found' });
+    }
+    res.json(achievement);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+export const deleteAchievement = async (req, res) => {
+  try {
+    const achievement = await Achievement.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
+    if (!achievement) {
+      return res.status(404).json({ message: 'Achievement not found' });
+    }
+    res.json({ message: 'Achievement deleted' });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

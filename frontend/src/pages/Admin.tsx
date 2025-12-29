@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { usePortfolio, type Project, type ExperienceItem } from '@/hooks/usePortfolio';
+import { usePortfolio, type Project, type ExperienceItem, type Education, type Certification, type Achievement } from '@/hooks/usePortfolio';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
     Trash2, Plus, Save, ArrowLeft, LogOut, Edit2, X, Check,
     User, Briefcase, Code, Star, Mail, FolderOpen, GraduationCap,
-    Building, Calendar, Link as LinkIcon, Github, ExternalLink
+    Building, Calendar, Link as LinkIcon, Github, ExternalLink, Award, Trophy
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
@@ -45,6 +45,15 @@ const Admin = () => {
         deleteExperience,
         updateExperience,
         setExperiences,
+        addEducation,
+        updateEducation,
+        deleteEducation,
+        addCertification,
+        updateCertification,
+        deleteCertification,
+        addAchievement,
+        updateAchievement,
+        deleteAchievement,
         // ...existing code...
     } = usePortfolio();
     const { toast } = useToast();
@@ -79,6 +88,43 @@ const Admin = () => {
     });
     const [editingExperience, setEditingExperience] = useState<string | null>(null);
     const [editExperienceData, setEditExperienceData] = useState<ExperienceItem | null>(null);
+
+    // Education states
+    const [newEducation, setNewEducation] = useState<Omit<Education, 'id'>>({
+        degree: '',
+        field: '',
+        institution: '',
+        location: '',
+        period: '',
+        gpa: '',
+        description: '',
+        order: 0,
+    });
+    const [editingEducation, setEditingEducation] = useState<string | null>(null);
+    const [editEducationData, setEditEducationData] = useState<Education | null>(null);
+
+    // Certification states
+    const [newCertification, setNewCertification] = useState<Omit<Certification, 'id'>>({
+        name: '',
+        issuer: '',
+        date: '',
+        credentialId: '',
+        credentialUrl: '',
+        expiryDate: '',
+    });
+    const [editingCertification, setEditingCertification] = useState<string | null>(null);
+    const [editCertificationData, setEditCertificationData] = useState<Certification | null>(null);
+
+    // Achievement states
+    const [newAchievement, setNewAchievement] = useState<Omit<Achievement, 'id'>>({
+        title: '',
+        description: '',
+        date: '',
+        type: 'other',
+        order: 0,
+    });
+    const [editingAchievement, setEditingAchievement] = useState<string | null>(null);
+    const [editAchievementData, setEditAchievementData] = useState<Achievement | null>(null);
 
     // ...existing code...
 
@@ -236,6 +282,135 @@ const Admin = () => {
         setEditExperienceData(null);
     };
 
+    // Education handlers
+    const handleAddEducation = async () => {
+        if (!newEducation.degree || !newEducation.institution || !newEducation.period) {
+            toast({ title: 'Please fill in degree, institution, and period', variant: 'destructive' });
+            return;
+        }
+        await addEducation(newEducation);
+        setNewEducation({ degree: '', field: '', institution: '', location: '', period: '', gpa: '', description: '', order: 0 });
+        toast({ title: 'Education added!' });
+    };
+
+    const handleDeleteEducation = async (id: string) => {
+        try {
+            await deleteEducation(id);
+            toast({ title: 'Education deleted' });
+        } catch (error) {
+            toast({ title: 'Failed to delete education', variant: 'destructive' });
+        }
+    };
+
+    const handleEditEducation = (edu: Education) => {
+        setEditingEducation(edu.id);
+        setEditEducationData({ ...edu });
+    };
+
+    const handleSaveEditEducation = async () => {
+        if (editEducationData) {
+            try {
+                await updateEducation(editEducationData.id, editEducationData);
+                setEditingEducation(null);
+                setEditEducationData(null);
+                toast({ title: 'Education updated!' });
+            } catch (error) {
+                toast({ title: 'Failed to update education', variant: 'destructive' });
+            }
+        }
+    };
+
+    const handleCancelEditEducation = () => {
+        setEditingEducation(null);
+        setEditEducationData(null);
+    };
+
+    // Certification handlers
+    const handleAddCertification = async () => {
+        if (!newCertification.name || !newCertification.issuer || !newCertification.date) {
+            toast({ title: 'Please fill in name, issuer, and date', variant: 'destructive' });
+            return;
+        }
+        await addCertification(newCertification);
+        setNewCertification({ name: '', issuer: '', date: '', credentialId: '', credentialUrl: '', expiryDate: '' });
+        toast({ title: 'Certification added!' });
+    };
+
+    const handleDeleteCertification = async (id: string) => {
+        try {
+            await deleteCertification(id);
+            toast({ title: 'Certification deleted' });
+        } catch (error) {
+            toast({ title: 'Failed to delete certification', variant: 'destructive' });
+        }
+    };
+
+    const handleEditCertification = (cert: Certification) => {
+        setEditingCertification(cert.id);
+        setEditCertificationData({ ...cert });
+    };
+
+    const handleSaveEditCertification = async () => {
+        if (editCertificationData) {
+            try {
+                await updateCertification(editCertificationData.id, editCertificationData);
+                setEditingCertification(null);
+                setEditCertificationData(null);
+                toast({ title: 'Certification updated!' });
+            } catch (error) {
+                toast({ title: 'Failed to update certification', variant: 'destructive' });
+            }
+        }
+    };
+
+    const handleCancelEditCertification = () => {
+        setEditingCertification(null);
+        setEditCertificationData(null);
+    };
+
+    // Achievement handlers
+    const handleAddAchievement = async () => {
+        if (!newAchievement.title || !newAchievement.description || !newAchievement.date) {
+            toast({ title: 'Please fill in title, description, and date', variant: 'destructive' });
+            return;
+        }
+        await addAchievement(newAchievement);
+        setNewAchievement({ title: '', description: '', date: '', type: 'other', order: 0 });
+        toast({ title: 'Achievement added!' });
+    };
+
+    const handleDeleteAchievement = async (id: string) => {
+        try {
+            await deleteAchievement(id);
+            toast({ title: 'Achievement deleted' });
+        } catch (error) {
+            toast({ title: 'Failed to delete achievement', variant: 'destructive' });
+        }
+    };
+
+    const handleEditAchievement = (ach: Achievement) => {
+        setEditingAchievement(ach.id);
+        setEditAchievementData({ ...ach });
+    };
+
+    const handleSaveEditAchievement = async () => {
+        if (editAchievementData) {
+            try {
+                await updateAchievement(editAchievementData.id, editAchievementData);
+                setEditingAchievement(null);
+                setEditAchievementData(null);
+                toast({ title: 'Achievement updated!' });
+            } catch (error) {
+                toast({ title: 'Failed to update achievement', variant: 'destructive' });
+            }
+        }
+    };
+
+    const handleCancelEditAchievement = () => {
+        setEditingAchievement(null);
+        setEditAchievementData(null);
+    };
+
     // ...existing code...
 
     if (!isAuthenticated) {
@@ -281,7 +456,10 @@ const Admin = () => {
                                 <Briefcase className="w-4 h-4" />
                                 <span className="hidden sm:inline">Experience</span>
                             </TabsTrigger>
-                            {/* ...existing code... */}
+                            <TabsTrigger value="cv" className="gap-2 text-xs md:text-sm">
+                                <GraduationCap className="w-4 h-4" />
+                                <span className="hidden sm:inline">CV</span>
+                            </TabsTrigger>
                             <TabsTrigger value="contact" className="gap-2 text-xs md:text-sm">
                                 <Mail className="w-4 h-4" />
                                 <span className="hidden sm:inline">Contact</span>
@@ -756,6 +934,593 @@ const Admin = () => {
                                 </div>
                             </CardContent>
                         </Card>
+                    </TabsContent>
+
+                    {/* CV Section */}
+                    <TabsContent value="cv" className="space-y-6">
+                        <Tabs defaultValue="education" className="space-y-6">
+                            <TabsList className="glass inline-flex w-auto p-1">
+                                <TabsTrigger value="education" className="gap-2 text-xs md:text-sm">
+                                    <GraduationCap className="w-4 h-4" />
+                                    Education
+                                </TabsTrigger>
+                                <TabsTrigger value="certifications" className="gap-2 text-xs md:text-sm">
+                                    <Award className="w-4 h-4" />
+                                    Certifications
+                                </TabsTrigger>
+                                <TabsTrigger value="achievements" className="gap-2 text-xs md:text-sm">
+                                    <Trophy className="w-4 h-4" />
+                                    Achievements
+                                </TabsTrigger>
+                            </TabsList>
+
+                            {/* Education Sub-tab */}
+                            <TabsContent value="education" className="space-y-6">
+                                {/* Add New Education */}
+                                <Card className="glass border-border">
+                                    <CardHeader>
+                                        <CardTitle className="font-display flex items-center gap-2">
+                                            <Plus className="w-5 h-5 text-primary" />
+                                            Add Education
+                                        </CardTitle>
+                                        <CardDescription>Add a new education entry</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label>Degree *</Label>
+                                                <Input
+                                                    placeholder="Bachelor of Science"
+                                                    value={newEducation.degree}
+                                                    onChange={e => setNewEducation(prev => ({ ...prev, degree: e.target.value }))}
+                                                    className="bg-input border-border"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Field of Study</Label>
+                                                <Input
+                                                    placeholder="Computer Science"
+                                                    value={newEducation.field}
+                                                    onChange={e => setNewEducation(prev => ({ ...prev, field: e.target.value }))}
+                                                    className="bg-input border-border"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label>Institution *</Label>
+                                                <Input
+                                                    placeholder="University Name"
+                                                    value={newEducation.institution}
+                                                    onChange={e => setNewEducation(prev => ({ ...prev, institution: e.target.value }))}
+                                                    className="bg-input border-border"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Location</Label>
+                                                <Input
+                                                    placeholder="City, Country"
+                                                    value={newEducation.location}
+                                                    onChange={e => setNewEducation(prev => ({ ...prev, location: e.target.value }))}
+                                                    className="bg-input border-border"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label>Period *</Label>
+                                                <Input
+                                                    placeholder="2016 - 2020"
+                                                    value={newEducation.period}
+                                                    onChange={e => setNewEducation(prev => ({ ...prev, period: e.target.value }))}
+                                                    className="bg-input border-border"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>GPA</Label>
+                                                <Input
+                                                    placeholder="3.8"
+                                                    value={newEducation.gpa}
+                                                    onChange={e => setNewEducation(prev => ({ ...prev, gpa: e.target.value }))}
+                                                    className="bg-input border-border"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Description</Label>
+                                            <Textarea
+                                                placeholder="Describe your studies, achievements, or relevant coursework..."
+                                                value={newEducation.description}
+                                                onChange={e => setNewEducation(prev => ({ ...prev, description: e.target.value }))}
+                                                className="bg-input border-border min-h-[80px]"
+                                            />
+                                        </div>
+                                        <Button onClick={handleAddEducation} className="gap-2">
+                                            <Plus className="w-4 h-4" />
+                                            Add Education
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Existing Education */}
+                                <Card className="glass border-border">
+                                    <CardHeader>
+                                        <CardTitle className="font-display flex items-center gap-2">
+                                            <GraduationCap className="w-5 h-5 text-primary" />
+                                            Education History
+                                        </CardTitle>
+                                        <CardDescription>{data.education.length} education(s)</CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-4">
+                                            {data.education.length === 0 ? (
+                                                <p className="text-muted-foreground text-center py-8">No education entries yet. Add your first education above!</p>
+                                            ) : (
+                                                data.education.map(edu => (
+                                                    <div key={edu.id} className="p-4 bg-muted/50 rounded-xl border border-border/50">
+                                                        {editingEducation === edu.id && editEducationData ? (
+                                                            <div className="space-y-4">
+                                                                <div className="grid md:grid-cols-2 gap-4">
+                                                                    <Input
+                                                                        value={editEducationData.degree}
+                                                                        onChange={e => setEditEducationData(prev => prev ? { ...prev, degree: e.target.value } : null)}
+                                                                        className="bg-input border-border"
+                                                                        placeholder="Degree"
+                                                                    />
+                                                                    <Input
+                                                                        value={editEducationData.field}
+                                                                        onChange={e => setEditEducationData(prev => prev ? { ...prev, field: e.target.value } : null)}
+                                                                        className="bg-input border-border"
+                                                                        placeholder="Field"
+                                                                    />
+                                                                </div>
+                                                                <div className="grid md:grid-cols-2 gap-4">
+                                                                    <Input
+                                                                        value={editEducationData.institution}
+                                                                        onChange={e => setEditEducationData(prev => prev ? { ...prev, institution: e.target.value } : null)}
+                                                                        className="bg-input border-border"
+                                                                        placeholder="Institution"
+                                                                    />
+                                                                    <Input
+                                                                        value={editEducationData.location}
+                                                                        onChange={e => setEditEducationData(prev => prev ? { ...prev, location: e.target.value } : null)}
+                                                                        className="bg-input border-border"
+                                                                        placeholder="Location"
+                                                                    />
+                                                                </div>
+                                                                <div className="grid md:grid-cols-2 gap-4">
+                                                                    <Input
+                                                                        value={editEducationData.period}
+                                                                        onChange={e => setEditEducationData(prev => prev ? { ...prev, period: e.target.value } : null)}
+                                                                        className="bg-input border-border"
+                                                                        placeholder="Period"
+                                                                    />
+                                                                    <Input
+                                                                        value={editEducationData.gpa}
+                                                                        onChange={e => setEditEducationData(prev => prev ? { ...prev, gpa: e.target.value } : null)}
+                                                                        className="bg-input border-border"
+                                                                        placeholder="GPA"
+                                                                    />
+                                                                </div>
+                                                                <Textarea
+                                                                    value={editEducationData.description}
+                                                                    onChange={e => setEditEducationData(prev => prev ? { ...prev, description: e.target.value } : null)}
+                                                                    className="bg-input border-border"
+                                                                    placeholder="Description"
+                                                                />
+                                                                <div className="flex gap-2">
+                                                                    <Button size="sm" onClick={handleSaveEditEducation} className="gap-1">
+                                                                        <Check className="w-3 h-3" />
+                                                                        Save
+                                                                    </Button>
+                                                                    <Button size="sm" variant="outline" onClick={handleCancelEditEducation} className="gap-1">
+                                                                        <X className="w-3 h-3" />
+                                                                        Cancel
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex items-start justify-between gap-4">
+                                                                <div className="flex-1">
+                                                                    <h4 className="font-medium">{edu.degree} in {edu.field}</h4>
+                                                                    <p className="text-sm text-primary">{edu.institution}</p>
+                                                                    <p className="text-xs text-muted-foreground">{edu.location} • {edu.period}</p>
+                                                                    {edu.gpa && <p className="text-xs text-muted-foreground">GPA: {edu.gpa}</p>}
+                                                                    {edu.description && <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{edu.description}</p>}
+                                                                </div>
+                                                                <div className="flex gap-2 shrink-0">
+                                                                    <Button variant="outline" size="icon" onClick={() => handleEditEducation(edu)} aria-label="Edit education">
+                                                                        <Edit2 className="w-4 h-4" />
+                                                                    </Button>
+                                                                    <AlertDialog>
+                                                                        <AlertDialogTrigger asChild>
+                                                                            <Button variant="destructive" size="icon" aria-label="Delete education">
+                                                                                <Trash2 className="w-4 h-4" />
+                                                                            </Button>
+                                                                        </AlertDialogTrigger>
+                                                                        <AlertDialogContent>
+                                                                            <AlertDialogHeader>
+                                                                                <AlertDialogTitle>Delete Education?</AlertDialogTitle>
+                                                                                <AlertDialogDescription>
+                                                                                    This will permanently delete your education at "{edu.institution}". This action cannot be undone.
+                                                                                </AlertDialogDescription>
+                                                                            </AlertDialogHeader>
+                                                                            <AlertDialogFooter>
+                                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                                <AlertDialogAction onClick={() => handleDeleteEducation(edu.id)}>Delete</AlertDialogAction>
+                                                                            </AlertDialogFooter>
+                                                                        </AlertDialogContent>
+                                                                    </AlertDialog>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
+
+                            {/* Certifications Sub-tab */}
+                            <TabsContent value="certifications" className="space-y-6">
+                                {/* Add New Certification */}
+                                <Card className="glass border-border">
+                                    <CardHeader>
+                                        <CardTitle className="font-display flex items-center gap-2">
+                                            <Plus className="w-5 h-5 text-primary" />
+                                            Add Certification
+                                        </CardTitle>
+                                        <CardDescription>Add a new certification</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label>Certification Name *</Label>
+                                                <Input
+                                                    placeholder="AWS Certified Developer"
+                                                    value={newCertification.name}
+                                                    onChange={e => setNewCertification(prev => ({ ...prev, name: e.target.value }))}
+                                                    className="bg-input border-border"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Issuer *</Label>
+                                                <Input
+                                                    placeholder="Amazon Web Services"
+                                                    value={newCertification.issuer}
+                                                    onChange={e => setNewCertification(prev => ({ ...prev, issuer: e.target.value }))}
+                                                    className="bg-input border-border"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label>Issue Date *</Label>
+                                                <Input
+                                                    type="date"
+                                                    value={newCertification.date}
+                                                    onChange={e => setNewCertification(prev => ({ ...prev, date: e.target.value }))}
+                                                    className="bg-input border-border"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Expiry Date</Label>
+                                                <Input
+                                                    type="date"
+                                                    value={newCertification.expiryDate}
+                                                    onChange={e => setNewCertification(prev => ({ ...prev, expiryDate: e.target.value }))}
+                                                    className="bg-input border-border"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label>Credential ID</Label>
+                                                <Input
+                                                    placeholder="ABC123456"
+                                                    value={newCertification.credentialId}
+                                                    onChange={e => setNewCertification(prev => ({ ...prev, credentialId: e.target.value }))}
+                                                    className="bg-input border-border"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Credential URL</Label>
+                                                <Input
+                                                    placeholder="https://verify.certification.com/..."
+                                                    value={newCertification.credentialUrl}
+                                                    onChange={e => setNewCertification(prev => ({ ...prev, credentialUrl: e.target.value }))}
+                                                    className="bg-input border-border"
+                                                />
+                                            </div>
+                                        </div>
+                                        <Button onClick={handleAddCertification} className="gap-2">
+                                            <Plus className="w-4 h-4" />
+                                            Add Certification
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Existing Certifications */}
+                                <Card className="glass border-border">
+                                    <CardHeader>
+                                        <CardTitle className="font-display flex items-center gap-2">
+                                            <Award className="w-5 h-5 text-primary" />
+                                            Certifications
+                                        </CardTitle>
+                                        <CardDescription>{data.certifications.length} certification(s)</CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-4">
+                                            {data.certifications.length === 0 ? (
+                                                <p className="text-muted-foreground text-center py-8">No certifications yet. Add your first certification above!</p>
+                                            ) : (
+                                                data.certifications.map(cert => (
+                                                    <div key={cert.id} className="p-4 bg-muted/50 rounded-xl border border-border/50">
+                                                        {editingCertification === cert.id && editCertificationData ? (
+                                                            <div className="space-y-4">
+                                                                <div className="grid md:grid-cols-2 gap-4">
+                                                                    <Input
+                                                                        value={editCertificationData.name}
+                                                                        onChange={e => setEditCertificationData(prev => prev ? { ...prev, name: e.target.value } : null)}
+                                                                        className="bg-input border-border"
+                                                                        placeholder="Certification Name"
+                                                                    />
+                                                                    <Input
+                                                                        value={editCertificationData.issuer}
+                                                                        onChange={e => setEditCertificationData(prev => prev ? { ...prev, issuer: e.target.value } : null)}
+                                                                        className="bg-input border-border"
+                                                                        placeholder="Issuer"
+                                                                    />
+                                                                </div>
+                                                                <div className="grid md:grid-cols-2 gap-4">
+                                                                    <Input
+                                                                        type="date"
+                                                                        value={editCertificationData.date}
+                                                                        onChange={e => setEditCertificationData(prev => prev ? { ...prev, date: e.target.value } : null)}
+                                                                        className="bg-input border-border"
+                                                                    />
+                                                                    <Input
+                                                                        type="date"
+                                                                        value={editCertificationData.expiryDate}
+                                                                        onChange={e => setEditCertificationData(prev => prev ? { ...prev, expiryDate: e.target.value } : null)}
+                                                                        className="bg-input border-border"
+                                                                    />
+                                                                </div>
+                                                                <div className="grid md:grid-cols-2 gap-4">
+                                                                    <Input
+                                                                        value={editCertificationData.credentialId}
+                                                                        onChange={e => setEditCertificationData(prev => prev ? { ...prev, credentialId: e.target.value } : null)}
+                                                                        className="bg-input border-border"
+                                                                        placeholder="Credential ID"
+                                                                    />
+                                                                    <Input
+                                                                        value={editCertificationData.credentialUrl}
+                                                                        onChange={e => setEditCertificationData(prev => prev ? { ...prev, credentialUrl: e.target.value } : null)}
+                                                                        className="bg-input border-border"
+                                                                        placeholder="Credential URL"
+                                                                    />
+                                                                </div>
+                                                                <div className="flex gap-2">
+                                                                    <Button size="sm" onClick={handleSaveEditCertification} className="gap-1">
+                                                                        <Check className="w-3 h-3" />
+                                                                        Save
+                                                                    </Button>
+                                                                    <Button size="sm" variant="outline" onClick={handleCancelEditCertification} className="gap-1">
+                                                                        <X className="w-3 h-3" />
+                                                                        Cancel
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex items-start justify-between gap-4">
+                                                                <div className="flex-1">
+                                                                    <h4 className="font-medium">{cert.name}</h4>
+                                                                    <p className="text-sm text-primary">{cert.issuer}</p>
+                                                                    <p className="text-xs text-muted-foreground">Issued: {new Date(cert.date).toLocaleDateString()}</p>
+                                                                    {cert.expiryDate && <p className="text-xs text-muted-foreground">Expires: {new Date(cert.expiryDate).toLocaleDateString()}</p>}
+                                                                    {cert.credentialId && <p className="text-xs text-muted-foreground">ID: {cert.credentialId}</p>}
+                                                                    {cert.credentialUrl && (
+                                                                        <a href={cert.credentialUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">
+                                                                            View Credential
+                                                                        </a>
+                                                                    )}
+                                                                </div>
+                                                                <div className="flex gap-2 shrink-0">
+                                                                    <Button variant="outline" size="icon" onClick={() => handleEditCertification(cert)} aria-label="Edit certification">
+                                                                        <Edit2 className="w-4 h-4" />
+                                                                    </Button>
+                                                                    <AlertDialog>
+                                                                        <AlertDialogTrigger asChild>
+                                                                            <Button variant="destructive" size="icon" aria-label="Delete certification">
+                                                                                <Trash2 className="w-4 h-4" />
+                                                                            </Button>
+                                                                        </AlertDialogTrigger>
+                                                                        <AlertDialogContent>
+                                                                            <AlertDialogHeader>
+                                                                                <AlertDialogTitle>Delete Certification?</AlertDialogTitle>
+                                                                                <AlertDialogDescription>
+                                                                                    This will permanently delete your certification "{cert.name}". This action cannot be undone.
+                                                                                </AlertDialogDescription>
+                                                                            </AlertDialogHeader>
+                                                                            <AlertDialogFooter>
+                                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                                <AlertDialogAction onClick={() => handleDeleteCertification(cert.id)}>Delete</AlertDialogAction>
+                                                                            </AlertDialogFooter>
+                                                                        </AlertDialogContent>
+                                                                    </AlertDialog>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
+
+                            {/* Achievements Sub-tab */}
+                            <TabsContent value="achievements" className="space-y-6">
+                                {/* Add New Achievement */}
+                                <Card className="glass border-border">
+                                    <CardHeader>
+                                        <CardTitle className="font-display flex items-center gap-2">
+                                            <Plus className="w-5 h-5 text-primary" />
+                                            Add Achievement
+                                        </CardTitle>
+                                        <CardDescription>Add a new achievement or recognition</CardDescription>
+                                    </CardHeader>
+                                    <CardContent className="space-y-4">
+                                        <div className="space-y-2">
+                                            <Label>Title *</Label>
+                                            <Input
+                                                placeholder="Best Developer Award 2023"
+                                                value={newAchievement.title}
+                                                onChange={e => setNewAchievement(prev => ({ ...prev, title: e.target.value }))}
+                                                className="bg-input border-border"
+                                            />
+                                        </div>
+                                        <div className="grid md:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label>Date *</Label>
+                                                <Input
+                                                    type="date"
+                                                    value={newAchievement.date}
+                                                    onChange={e => setNewAchievement(prev => ({ ...prev, date: e.target.value }))}
+                                                    className="bg-input border-border"
+                                                />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <Label>Type</Label>
+                                                <select
+                                                    value={newAchievement.type}
+                                                    onChange={e => setNewAchievement(prev => ({ ...prev, type: e.target.value as any }))}
+                                                    className="w-full px-3 py-2 bg-input border border-border rounded-md"
+                                                >
+                                                    <option value="award">Award</option>
+                                                    <option value="recognition">Recognition</option>
+                                                    <option value="publication">Publication</option>
+                                                    <option value="other">Other</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label>Description *</Label>
+                                            <Textarea
+                                                placeholder="Describe the achievement, what it was for, and its significance..."
+                                                value={newAchievement.description}
+                                                onChange={e => setNewAchievement(prev => ({ ...prev, description: e.target.value }))}
+                                                className="bg-input border-border min-h-[80px]"
+                                            />
+                                        </div>
+                                        <Button onClick={handleAddAchievement} className="gap-2">
+                                            <Plus className="w-4 h-4" />
+                                            Add Achievement
+                                        </Button>
+                                    </CardContent>
+                                </Card>
+
+                                {/* Existing Achievements */}
+                                <Card className="glass border-border">
+                                    <CardHeader>
+                                        <CardTitle className="font-display flex items-center gap-2">
+                                            <Trophy className="w-5 h-5 text-primary" />
+                                            Achievements
+                                        </CardTitle>
+                                        <CardDescription>{data.achievements.length} achievement(s)</CardDescription>
+                                    </CardHeader>
+                                    <CardContent>
+                                        <div className="space-y-4">
+                                            {data.achievements.length === 0 ? (
+                                                <p className="text-muted-foreground text-center py-8">No achievements yet. Add your first achievement above!</p>
+                                            ) : (
+                                                data.achievements.map(ach => (
+                                                    <div key={ach.id} className="p-4 bg-muted/50 rounded-xl border border-border/50">
+                                                        {editingAchievement === ach.id && editAchievementData ? (
+                                                            <div className="space-y-4">
+                                                                <Input
+                                                                    value={editAchievementData.title}
+                                                                    onChange={e => setEditAchievementData(prev => prev ? { ...prev, title: e.target.value } : null)}
+                                                                    className="bg-input border-border"
+                                                                    placeholder="Title"
+                                                                />
+                                                                <div className="grid md:grid-cols-2 gap-4">
+                                                                    <Input
+                                                                        type="date"
+                                                                        value={editAchievementData.date}
+                                                                        onChange={e => setEditAchievementData(prev => prev ? { ...prev, date: e.target.value } : null)}
+                                                                        className="bg-input border-border"
+                                                                    />
+                                                                    <select
+                                                                        value={editAchievementData.type}
+                                                                        onChange={e => setEditAchievementData(prev => prev ? { ...prev, type: e.target.value as any } : null)}
+                                                                        className="w-full px-3 py-2 bg-input border border-border rounded-md"
+                                                                    >
+                                                                        <option value="award">Award</option>
+                                                                        <option value="recognition">Recognition</option>
+                                                                        <option value="publication">Publication</option>
+                                                                        <option value="other">Other</option>
+                                                                    </select>
+                                                                </div>
+                                                                <Textarea
+                                                                    value={editAchievementData.description}
+                                                                    onChange={e => setEditAchievementData(prev => prev ? { ...prev, description: e.target.value } : null)}
+                                                                    className="bg-input border-border"
+                                                                    placeholder="Description"
+                                                                />
+                                                                <div className="flex gap-2">
+                                                                    <Button size="sm" onClick={handleSaveEditAchievement} className="gap-1">
+                                                                        <Check className="w-3 h-3" />
+                                                                        Save
+                                                                    </Button>
+                                                                    <Button size="sm" variant="outline" onClick={handleCancelEditAchievement} className="gap-1">
+                                                                        <X className="w-3 h-3" />
+                                                                        Cancel
+                                                                    </Button>
+                                                                </div>
+                                                            </div>
+                                                        ) : (
+                                                            <div className="flex items-start justify-between gap-4">
+                                                                <div className="flex-1">
+                                                                    <h4 className="font-medium">{ach.title}</h4>
+                                                                    <p className="text-xs text-muted-foreground capitalize">{ach.type} • {new Date(ach.date).toLocaleDateString()}</p>
+                                                                    <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{ach.description}</p>
+                                                                </div>
+                                                                <div className="flex gap-2 shrink-0">
+                                                                    <Button variant="outline" size="icon" onClick={() => handleEditAchievement(ach)} aria-label="Edit achievement">
+                                                                        <Edit2 className="w-4 h-4" />
+                                                                    </Button>
+                                                                    <AlertDialog>
+                                                                        <AlertDialogTrigger asChild>
+                                                                            <Button variant="destructive" size="icon" aria-label="Delete achievement">
+                                                                                <Trash2 className="w-4 h-4" />
+                                                                            </Button>
+                                                                        </AlertDialogTrigger>
+                                                                        <AlertDialogContent>
+                                                                            <AlertDialogHeader>
+                                                                                <AlertDialogTitle>Delete Achievement?</AlertDialogTitle>
+                                                                                <AlertDialogDescription>
+                                                                                    This will permanently delete your achievement "{ach.title}". This action cannot be undone.
+                                                                                </AlertDialogDescription>
+                                                                            </AlertDialogHeader>
+                                                                            <AlertDialogFooter>
+                                                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                                                <AlertDialogAction onClick={() => handleDeleteAchievement(ach.id)}>Delete</AlertDialogAction>
+                                                                            </AlertDialogFooter>
+                                                                        </AlertDialogContent>
+                                                                    </AlertDialog>
+                                                                </div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ))
+                                            )}
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            </TabsContent>
+                        </Tabs>
                     </TabsContent>
 
                     {/* ...existing code... */}

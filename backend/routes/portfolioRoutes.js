@@ -9,7 +9,8 @@ import {
   getTestimonials, createTestimonial, updateTestimonial, deleteTestimonial,
   getContact, updateContact,
   getEducation, createEducation, updateEducation, deleteEducation,
-  getCertifications, createCertification, updateCertification, deleteCertification
+  getCertifications, createCertification, updateCertification, deleteCertification,
+  getAchievements, createAchievement, updateAchievement, deleteAchievement
 } from '../controllers/portfolioController.js';
 
 const router = express.Router();
@@ -82,5 +83,14 @@ router.route('/admin/certifications')
 router.route('/admin/certifications/:id')
   .put(protect, updateCertification)
   .delete(protect, deleteCertification);
+
+// Achievements
+router.route('/admin/achievements')
+  .get(protect, getAchievements)
+  .post(protect, createAchievement);
+
+router.route('/admin/achievements/:id')
+  .put(protect, updateAchievement)
+  .delete(protect, deleteAchievement);
 
 export default router;

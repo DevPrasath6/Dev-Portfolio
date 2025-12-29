@@ -26,6 +26,37 @@ export interface ExperienceItem {
   current?: boolean;
 }
 
+export interface Education {
+  id: string;
+  degree: string;
+  field: string;
+  institution: string;
+  location: string;
+  period: string;
+  gpa?: string;
+  description?: string;
+  order: number;
+}
+
+export interface Certification {
+  id: string;
+  name: string;
+  issuer: string;
+  date: string;
+  credentialId?: string;
+  credentialUrl?: string;
+  expiryDate?: string;
+}
+
+export interface Achievement {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  type: 'award' | 'recognition' | 'publication' | 'other';
+  order: number;
+}
+
 export interface Testimonial {
   id: string;
   name: string;
@@ -55,6 +86,9 @@ export interface PortfolioData {
     linkedin?: string;
     github?: string;
   };
+  education: Education[];
+  certifications: Certification[];
+  achievements: Achievement[];
 }
 
 const defaultData: PortfolioData = {
@@ -161,6 +195,9 @@ const defaultData: PortfolioData = {
     linkedin: "https://linkedin.com/in/devprasatha9",
     github: "https://github.com/DevPrasath6",
   },
+  education: [],
+  certifications: [],
+  achievements: [],
 };
 
 const STORAGE_KEY = 'portfolio-data';
@@ -190,6 +227,9 @@ export function usePortfolio() {
           projects: portfolioData.projects || defaultData.projects,
           testimonials: portfolioData.testimonials || defaultData.testimonials,
           contact: portfolioData.contact || defaultData.contact,
+          education: portfolioData.education?.map(e => ({ ...e, id: e._id })) || defaultData.education,
+          certifications: portfolioData.certifications?.map(c => ({ ...c, id: c._id })) || defaultData.certifications,
+          achievements: portfolioData.achievements?.map(a => ({ ...a, id: a._id })) || defaultData.achievements,
         };
 
         setData(transformedData);
@@ -404,6 +444,123 @@ export function usePortfolio() {
     }
   };
 
+  // Education CRUD
+  const addEducation = async (education: Omit<Education, 'id'>) => {
+    try {
+      const newEducation = await portfolioApi.admin.createEducation(education);
+      setData(prev => ({ ...prev, education: [...prev.education, newEducation] }));
+      return newEducation;
+    } catch (err) {
+      console.error('Failed to add education:', err);
+      throw err;
+    }
+  };
+
+  const updateEducation = async (id: string, education: Partial<Education>) => {
+    try {
+      const updatedEducation = await portfolioApi.admin.updateEducation(id, education);
+      setData(prev => ({
+        ...prev,
+        education: prev.education.map(e => e.id === id ? updatedEducation : e),
+      }));
+      return updatedEducation;
+    } catch (err) {
+      console.error('Failed to update education:', err);
+      throw err;
+    }
+  };
+
+  const deleteEducation = async (id: string) => {
+    try {
+      await portfolioApi.admin.deleteEducation(id);
+      setData(prev => ({
+        ...prev,
+        education: prev.education.filter(e => e.id !== id),
+      }));
+    } catch (err) {
+      console.error('Failed to delete education:', err);
+      throw err;
+    }
+  };
+
+  // Certifications CRUD
+  const addCertification = async (certification: Omit<Certification, 'id'>) => {
+    try {
+      const newCertification = await portfolioApi.admin.createCertification(certification);
+      setData(prev => ({ ...prev, certifications: [...prev.certifications, newCertification] }));
+      return newCertification;
+    } catch (err) {
+      console.error('Failed to add certification:', err);
+      throw err;
+    }
+  };
+
+  const updateCertification = async (id: string, certification: Partial<Certification>) => {
+    try {
+      const updatedCertification = await portfolioApi.admin.updateCertification(id, certification);
+      setData(prev => ({
+        ...prev,
+        certifications: prev.certifications.map(c => c.id === id ? updatedCertification : c),
+      }));
+      return updatedCertification;
+    } catch (err) {
+      console.error('Failed to update certification:', err);
+      throw err;
+    }
+  };
+
+  const deleteCertification = async (id: string) => {
+    try {
+      await portfolioApi.admin.deleteCertification(id);
+      setData(prev => ({
+        ...prev,
+        certifications: prev.certifications.filter(c => c.id !== id),
+      }));
+    } catch (err) {
+      console.error('Failed to delete certification:', err);
+      throw err;
+    }
+  };
+
+  // Achievements CRUD
+  const addAchievement = async (achievement: Omit<Achievement, 'id'>) => {
+    try {
+      const newAchievement = await portfolioApi.admin.createAchievement(achievement);
+      setData(prev => ({ ...prev, achievements: [...prev.achievements, newAchievement] }));
+      return newAchievement;
+    } catch (err) {
+      console.error('Failed to add achievement:', err);
+      throw err;
+    }
+  };
+
+  const updateAchievement = async (id: string, achievement: Partial<Achievement>) => {
+    try {
+      const updatedAchievement = await portfolioApi.admin.updateAchievement(id, achievement);
+      setData(prev => ({
+        ...prev,
+        achievements: prev.achievements.map(a => a.id === id ? updatedAchievement : a),
+      }));
+      return updatedAchievement;
+    } catch (err) {
+      console.error('Failed to update achievement:', err);
+      throw err;
+    }
+  };
+
+  const deleteAchievement = async (id: string) => {
+    try {
+      await portfolioApi.admin.deleteAchievement(id);
+      setData(prev => ({
+        ...prev,
+        achievements: prev.achievements.filter(a => a.id !== id),
+      }));
+    } catch (err) {
+      console.error('Failed to delete achievement:', err);
+      throw err;
+    }
+  };
+
   const setExperiences = (experiences: ExperienceItem[]) => {
     setData(prev => ({ ...prev, experiences }));
   };
@@ -433,5 +590,14 @@ export function usePortfolio() {
     deleteSkill,
     addTestimonial,
     deleteTestimonial,
+    addEducation,
+    updateEducation,
+    deleteEducation,
+    addCertification,
+    updateCertification,
+    deleteCertification,
+    addAchievement,
+    updateAchievement,
+    deleteAchievement,
   };
 }

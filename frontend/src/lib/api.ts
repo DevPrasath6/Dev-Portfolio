@@ -193,6 +193,23 @@ export const portfolioApi = {
       apiRequest(`/api/portfolio/admin/certifications/${id}`, {
         method: 'DELETE',
       }),
+
+    // Achievements
+    getAchievements: () => apiRequest<any[]>('/api/portfolio/admin/achievements'),
+    createAchievement: (data: any) =>
+      apiRequest('/api/portfolio/admin/achievements', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    updateAchievement: (id: string, data: any) =>
+      apiRequest(`/api/portfolio/admin/achievements/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+    deleteAchievement: (id: string) =>
+      apiRequest(`/api/portfolio/admin/achievements/${id}`, {
+        method: 'DELETE',
+      }),
   },
 };
 
