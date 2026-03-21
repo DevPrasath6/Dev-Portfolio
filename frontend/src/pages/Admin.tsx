@@ -54,7 +54,7 @@ const Admin = () => {
         addAchievement,
         updateAchievement,
         deleteAchievement,
-        // ...existing code...
+        updateStats,
     } = usePortfolio();
     const { toast } = useToast();
 
@@ -111,9 +111,11 @@ const Admin = () => {
         credentialId: '',
         credentialUrl: '',
         expiryDate: '',
+        skills: [],
     });
     const [editingCertification, setEditingCertification] = useState<string | null>(null);
     const [editCertificationData, setEditCertificationData] = useState<Certification | null>(null);
+    const [certificationSkillInput, setCertificationSkillInput] = useState('');
 
     // Achievement states
     const [newAchievement, setNewAchievement] = useState<Omit<Achievement, 'id'>>({
@@ -126,6 +128,17 @@ const Admin = () => {
     const [editingAchievement, setEditingAchievement] = useState<string | null>(null);
     const [editAchievementData, setEditAchievementData] = useState<Achievement | null>(null);
 
+    // Stats states
+    const [stats, setStats] = useState(data.stats || {
+        heroYearsExperience: '2+',
+        heroProjectsDelivered: '10',
+        heroHappyClients: '7',
+        cvYearsExperience: '7+',
+        cvProjects: '100+',
+        cvCertifications: '15+',
+        cvClients: '50+',
+    });
+
     // ...existing code...
 
     // Check if already authenticated
@@ -135,6 +148,13 @@ const Admin = () => {
             setIsAuthenticated(true);
         }
     }, []);
+
+    // Sync stats state with data
+    useEffect(() => {
+        if (data.stats) {
+            setStats(data.stats);
+        }
+    }, [data.stats]);
 
     const handleLogout = () => {
         sessionStorage.removeItem('adminAuthenticated');
@@ -332,7 +352,8 @@ const Admin = () => {
             return;
         }
         await addCertification(newCertification);
-        setNewCertification({ name: '', issuer: '', date: '', credentialId: '', credentialUrl: '', expiryDate: '' });
+        setNewCertification({ name: '', issuer: '', date: '', credentialId: '', credentialUrl: '', expiryDate: '', skills: [] });
+        setCertificationSkillInput('');
         toast({ title: 'Certification added!' });
     };
 
@@ -459,6 +480,10 @@ const Admin = () => {
                             <TabsTrigger value="cv" className="gap-2 text-xs md:text-sm">
                                 <GraduationCap className="w-4 h-4" />
                                 <span className="hidden sm:inline">CV</span>
+                            </TabsTrigger>
+                            <TabsTrigger value="stats" className="gap-2 text-xs md:text-sm">
+                                <Trophy className="w-4 h-4" />
+                                <span className="hidden sm:inline">Stats</span>
                             </TabsTrigger>
                             <TabsTrigger value="contact" className="gap-2 text-xs md:text-sm">
                                 <Mail className="w-4 h-4" />
@@ -1234,6 +1259,66 @@ const Admin = () => {
                                                 />
                                             </div>
                                         </div>
+
+                                        {/* Skills */}
+                                        <div className="space-y-2">
+                                            <Label>Skills (Related to this certification)</Label>
+                                            <div className="flex gap-2">
+                                                <Input
+                                                    placeholder="e.g., AWS, Cloud Architecture"
+                                                    value={certificationSkillInput}
+                                                    onChange={e => setCertificationSkillInput(e.target.value)}
+                                                    onKeyDown={e => {
+                                                        if (e.key === 'Enter') {
+                                                            e.preventDefault();
+                                                            if (certificationSkillInput.trim()) {
+                                                                setNewCertification(prev => ({
+                                                                    ...prev,
+                                                                    skills: [...(prev.skills || []), certificationSkillInput.trim()]
+                                                                }));
+                                                                setCertificationSkillInput('');
+                                                            }
+                                                        }
+                                                    }}
+                                                    className="bg-input border-border"
+                                                />
+                                                <Button
+                                                    variant="outline"
+                                                    onClick={() => {
+                                                        if (certificationSkillInput.trim()) {
+                                                            setNewCertification(prev => ({
+                                                                ...prev,
+                                                                skills: [...(prev.skills || []), certificationSkillInput.trim()]
+                                                            }));
+                                                            setCertificationSkillInput('');
+                                                        }
+                                                    }}
+                                                    className="gap-2"
+                                                >
+                                                    <Plus className="w-4 h-4" />
+                                                    Add
+                                                </Button>
+                                            </div>
+                                            {newCertification.skills && newCertification.skills.length > 0 && (
+                                                <div className="flex flex-wrap gap-2 mt-2">
+                                                    {newCertification.skills.map(skill => (
+                                                        <Badge key={skill} variant="secondary" className="gap-2">
+                                                            {skill}
+                                                            <button
+                                                                onClick={() => setNewCertification(prev => ({
+                                                                    ...prev,
+                                                                    skills: (prev.skills || []).filter(s => s !== skill)
+                                                                }))}
+                                                                className="hover:text-red-400"
+                                                            >
+                                                                <X className="w-3 h-3" />
+                                                            </button>
+                                                        </Badge>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+
                                         <Button onClick={handleAddCertification} className="gap-2">
                                             <Plus className="w-4 h-4" />
                                             Add Certification
@@ -1301,6 +1386,30 @@ const Admin = () => {
                                                                         placeholder="Credential URL"
                                                                     />
                                                                 </div>
+
+                                                                {/* Edit Skills */}
+                                                                <div className="space-y-2">
+                                                                    <Label className="text-xs">Skills</Label>
+                                                                    {editCertificationData.skills && editCertificationData.skills.length > 0 && (
+                                                                        <div className="flex flex-wrap gap-2">
+                                                                            {editCertificationData.skills.map(skill => (
+                                                                                <Badge key={skill} variant="secondary" className="gap-1">
+                                                                                    {skill}
+                                                                                    <button
+                                                                                        onClick={() => setEditCertificationData(prev => prev ? {
+                                                                                            ...prev,
+                                                                                            skills: (prev.skills || []).filter(s => s !== skill)
+                                                                                        } : null)}
+                                                                                        className="hover:text-red-400"
+                                                                                    >
+                                                                                        <X className="w-3 h-3" />
+                                                                                    </button>
+                                                                                </Badge>
+                                                                            ))}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+
                                                                 <div className="flex gap-2">
                                                                     <Button size="sm" onClick={handleSaveEditCertification} className="gap-1">
                                                                         <Check className="w-3 h-3" />
@@ -1524,6 +1633,130 @@ const Admin = () => {
                     </TabsContent>
 
                     {/* ...existing code... */}
+
+                    {/* Stats Section */}
+                    <TabsContent value="stats" className="space-y-6">
+                        <Card className="glass border-border">
+                            <CardHeader>
+                                <CardTitle className="font-display flex items-center gap-2">
+                                    <Trophy className="w-5 h-5 text-primary" />
+                                    Portfolio Statistics
+                                </CardTitle>
+                                <CardDescription>Manage your professional statistics displayed on the portfolio</CardDescription>
+                            </CardHeader>
+                            <CardContent className="space-y-8">
+                                {/* Hero Section Stats */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2 pb-2 border-b border-border">
+                                        <Star className="w-4 h-4 text-purple-400" />
+                                        <h3 className="font-semibold">Hero Section Statistics</h3>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="heroYears">Years of Experience</Label>
+                                            <Input
+                                                id="heroYears"
+                                                placeholder="e.g., 2+"
+                                                value={stats.heroYearsExperience}
+                                                onChange={(e) => setStats(prev => ({ ...prev, heroYearsExperience: e.target.value }))}
+                                                className="bg-background/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="heroProjects">Projects Delivered</Label>
+                                            <Input
+                                                id="heroProjects"
+                                                placeholder="e.g., 10"
+                                                value={stats.heroProjectsDelivered}
+                                                onChange={(e) => setStats(prev => ({ ...prev, heroProjectsDelivered: e.target.value }))}
+                                                className="bg-background/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="heroClients">Happy Clients</Label>
+                                            <Input
+                                                id="heroClients"
+                                                placeholder="e.g., 7"
+                                                value={stats.heroHappyClients}
+                                                onChange={(e) => setStats(prev => ({ ...prev, heroHappyClients: e.target.value }))}
+                                                className="bg-background/50"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* CV Section Stats */}
+                                <div className="space-y-4">
+                                    <div className="flex items-center gap-2 pb-2 border-b border-border">
+                                        <Award className="w-4 h-4 text-green-400" />
+                                        <h3 className="font-semibold">CV Section Statistics (Career Highlights)</h3>
+                                    </div>
+
+                                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                                        <div className="space-y-2">
+                                            <Label htmlFor="cvYears">Years Experience</Label>
+                                            <Input
+                                                id="cvYears"
+                                                placeholder="e.g., 7+"
+                                                value={stats.cvYearsExperience}
+                                                onChange={(e) => setStats(prev => ({ ...prev, cvYearsExperience: e.target.value }))}
+                                                className="bg-background/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="cvProjects">Projects</Label>
+                                            <Input
+                                                id="cvProjects"
+                                                placeholder="e.g., 100+"
+                                                value={stats.cvProjects}
+                                                onChange={(e) => setStats(prev => ({ ...prev, cvProjects: e.target.value }))}
+                                                className="bg-background/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="cvCerts">Certifications</Label>
+                                            <Input
+                                                id="cvCerts"
+                                                placeholder="e.g., 15+"
+                                                value={stats.cvCertifications}
+                                                onChange={(e) => setStats(prev => ({ ...prev, cvCertifications: e.target.value }))}
+                                                className="bg-background/50"
+                                            />
+                                        </div>
+                                        <div className="space-y-2">
+                                            <Label htmlFor="cvClients">Clients</Label>
+                                            <Input
+                                                id="cvClients"
+                                                placeholder="e.g., 50+"
+                                                value={stats.cvClients}
+                                                onChange={(e) => setStats(prev => ({ ...prev, cvClients: e.target.value }))}
+                                                className="bg-background/50"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Save Button */}
+                                <div className="flex justify-end pt-4">
+                                    <Button
+                                        onClick={async () => {
+                                            try {
+                                                await updateStats(stats);
+                                                toast({ title: 'Statistics updated successfully!' });
+                                            } catch (error) {
+                                                toast({ title: 'Error', description: 'Failed to update statistics' });
+                                            }
+                                        }}
+                                        className="bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700"
+                                    >
+                                        <Save className="w-4 h-4 mr-2" />
+                                        Save Statistics
+                                    </Button>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </TabsContent>
 
                     {/* Contact Section */}
                     <TabsContent value="contact" className="space-y-6">

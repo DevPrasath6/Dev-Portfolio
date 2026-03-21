@@ -7,6 +7,7 @@ import Contact from '../models/Contact.js';
 import Education from '../models/Education.js';
 import Certification from '../models/Certification.js';
 import Achievement from '../models/Achievement.js';
+import Stats from '../models/Stats.js';
 
 // ==================== PUBLIC ROUTES ====================
 
@@ -44,6 +45,7 @@ export const getPortfolio = async (req, res) => {
     const education = await Education.find().sort({ order: 1, createdAt: -1 });
     const certifications = await Certification.find().sort({ createdAt: -1 });
     const achievements = await Achievement.find().sort({ order: 1, createdAt: -1 });
+    const stats = await Stats.findOne().sort({ createdAt: -1 });
 
     res.json({
       hero,
@@ -54,7 +56,8 @@ export const getPortfolio = async (req, res) => {
       contact,
       education,
       certifications,
-      achievements
+      achievements,
+      stats
     });
   } catch (error) {
     console.error('Get portfolio error:', error);
@@ -494,6 +497,36 @@ export const deleteAchievement = async (req, res) => {
       return res.status(404).json({ message: 'Achievement not found' });
     }
     res.json({ message: 'Achievement deleted' });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+// ==================== STATS ====================
+
+export const getStats = async (req, res) => {
+  try {
+    let stats = await Stats.findOne({ userId: req.user._id });
+    if (!stats) {
+      stats = await Stats.create({ userId: req.user._id });
+    }
+    res.json(stats);
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
+export const updateStats = async (req, res) => {
+  try {
+    let stats = await Stats.findOne({ userId: req.user._id });
+
+    if (stats) {
+      stats = await Stats.findByIdAndUpdate(stats._id, req.body, { new: true });
+    } else {
+      stats = await Stats.create({ ...req.body, userId: req.user._id });
+    }
+
+    res.json(stats);
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }

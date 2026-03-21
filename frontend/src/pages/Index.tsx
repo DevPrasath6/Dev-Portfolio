@@ -56,7 +56,12 @@ const Index = () => {
                             title={data.hero.title}
                             subtitle={data.hero.subtitle}
                             setActivePage={setActivePage}
-                            certifications={defaultCertifications}
+                            certifications={data.certifications}
+                            stats={data.stats ? {
+                                heroYearsExperience: data.stats.heroYearsExperience,
+                                heroProjectsDelivered: data.stats.heroProjectsDelivered,
+                                heroHappyClients: data.stats.heroHappyClients,
+                            } : undefined}
                         />
                         <Footer
                             email={data.contact.email}
@@ -72,6 +77,12 @@ const Index = () => {
                             education={data.education}
                             certifications={data.certifications}
                             achievements={data.achievements}
+                            stats={data.stats ? {
+                                cvYearsExperience: data.stats.cvYearsExperience,
+                                cvProjects: data.stats.cvProjects,
+                                cvCertifications: data.stats.cvCertifications,
+                                cvClients: data.stats.cvClients,
+                            } : undefined}
                         />
                     </motion.div>
                 )}

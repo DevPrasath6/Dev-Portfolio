@@ -25,6 +25,10 @@ const certificationSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
+  skills: {
+    type: [String],
+    default: []
+  },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',

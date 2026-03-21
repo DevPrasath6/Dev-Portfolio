@@ -11,9 +11,14 @@ interface HeroProps {
     subtitle: string;
     setActivePage: (page: ActivePage) => void;
     certifications: Certification[];
+    stats?: {
+        heroYearsExperience: string;
+        heroProjectsDelivered: string;
+        heroHappyClients: string;
+    };
 }
 
-export function Hero({ name, title, subtitle, setActivePage, certifications }: HeroProps) {
+export function Hero({ name, title, subtitle, setActivePage, certifications, stats }: HeroProps) {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
     useEffect(() => {
@@ -27,10 +32,10 @@ export function Hero({ name, title, subtitle, setActivePage, certifications }: H
         return () => window.removeEventListener("mousemove", handleMouseMove);
     }, []);
 
-    const stats = [
-        { value: "2+", label: "Years Experience" },
-        { value: "10", label: "Projects Delivered" },
-        { value: "7", label: "Happy Clients" },
+    const heroStats = [
+        { value: stats?.heroYearsExperience || "2+", label: "Years Experience" },
+        { value: stats?.heroProjectsDelivered || "10", label: "Projects Delivered" },
+        { value: stats?.heroHappyClients || "7", label: "Happy Clients" },
     ];
 
     return (
@@ -125,7 +130,7 @@ export function Hero({ name, title, subtitle, setActivePage, certifications }: H
                         transition={{ delay: 0.9 }}
                         className="grid grid-cols-3 gap-8 max-w-2xl mx-auto mb-16"
                     >
-                        {stats.map((stat, index) => (
+                        {heroStats.map((stat, index) => (
                             <motion.div
                                 key={stat.label}
                                 className="text-center"

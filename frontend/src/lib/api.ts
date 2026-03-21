@@ -210,6 +210,14 @@ export const portfolioApi = {
       apiRequest(`/api/portfolio/admin/achievements/${id}`, {
         method: 'DELETE',
       }),
+
+    // Stats
+    getStats: () => apiRequest<any>('/api/portfolio/admin/stats'),
+    updateStats: (data: any) =>
+      apiRequest('/api/portfolio/admin/stats', {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
   },
 };
 

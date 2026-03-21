@@ -46,6 +46,7 @@ export interface Certification {
   credentialId?: string;
   credentialUrl?: string;
   expiryDate?: string;
+  skills?: string[];
 }
 
 export interface Achievement {
@@ -65,6 +66,16 @@ export interface Testimonial {
   content: string;
   avatar?: string;
   rating: number;
+}
+
+export interface Stats {
+  heroYearsExperience: string;
+  heroProjectsDelivered: string;
+  heroHappyClients: string;
+  cvYearsExperience: string;
+  cvProjects: string;
+  cvCertifications: string;
+  cvClients: string;
 }
 
 export interface PortfolioData {
@@ -89,6 +100,7 @@ export interface PortfolioData {
   education: Education[];
   certifications: Certification[];
   achievements: Achievement[];
+  stats?: Stats;
 }
 
 const defaultData: PortfolioData = {
@@ -148,6 +160,15 @@ const defaultData: PortfolioData = {
   education: [],
   certifications: [],
   achievements: [],
+  stats: {
+    heroYearsExperience: "2+",
+    heroProjectsDelivered: "10",
+    heroHappyClients: "7",
+    cvYearsExperience: "7+",
+    cvProjects: "100+",
+    cvCertifications: "15+",
+    cvClients: "50+"
+  }
 };
 
 const STORAGE_KEY = 'portfolio-data';
@@ -180,6 +201,7 @@ export function usePortfolio() {
           education: portfolioData.education?.map(e => ({ ...e, id: e._id })) || defaultData.education,
           certifications: portfolioData.certifications?.map(c => ({ ...c, id: c._id })) || defaultData.certifications,
           achievements: portfolioData.achievements?.map(a => ({ ...a, id: a._id })) || defaultData.achievements,
+          stats: portfolioData.stats || defaultData.stats,
         };
 
         setData(transformedData);
@@ -519,6 +541,17 @@ export function usePortfolio() {
     setData(prev => ({ ...prev, projects }));
   };
 
+  const updateStats = async (newStats: Partial<Stats>) => {
+    try {
+      const updatedStats = await portfolioApi.admin.updateStats(newStats);
+      setData(prev => ({ ...prev, stats: updatedStats }));
+      return updatedStats;
+    } catch (error) {
+      console.error('Failed to update stats:', error);
+      throw error;
+    }
+  };
+
   return {
     data,
     loading,
@@ -549,5 +582,6 @@ export function usePortfolio() {
     addAchievement,
     updateAchievement,
     deleteAchievement,
+    updateStats,
   };
 }
