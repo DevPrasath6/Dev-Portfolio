@@ -3,11 +3,12 @@ import { Mail, Linkedin, Github, Send, MapPin, Clock, ArrowUpRight } from "lucid
 
 interface ContactProps {
     email: string;
+    location?: string;
     linkedin?: string;
     github?: string;
 }
 
-export function Contact({ email, linkedin, github }: ContactProps) {
+export function Contact({ email, location, linkedin, github }: ContactProps) {
     const contactMethods = [
         {
             icon: Mail,
@@ -76,7 +77,7 @@ export function Contact({ email, linkedin, github }: ContactProps) {
                                     </div>
                                     <div>
                                         <p className="text-xs text-muted-foreground">Location</p>
-                                        <p className="text-sm font-medium text-foreground">Available Worldwide (Remote)</p>
+                                        <p className="text-sm font-medium text-foreground">{location || "Not specified"}</p>
                                     </div>
                                 </div>
 

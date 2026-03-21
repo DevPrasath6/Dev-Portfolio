@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Navbar } from "@/components/portfolio/Navbar";
 import { Hero } from "@/components/portfolio/Hero";
 import { Experience } from "@/components/portfolio/Experience";
@@ -15,6 +15,38 @@ export type ActivePage = "home" | "cv" | "experience" | "projects" | "contact";
 const Index = () => {
     const { data } = usePortfolio();
     const [activePage, setActivePage] = useState<ActivePage>("home");
+
+    useEffect(() => {
+        const metaDescription = document.querySelector('meta[name="description"]');
+
+        const seoByPage: Record<ActivePage, { title: string; description: string }> = {
+            home: {
+                title: `${data.hero.name} | ${data.hero.title}`,
+                description: data.hero.subtitle,
+            },
+            cv: {
+                title: `${data.hero.name} | CV & Certifications`,
+                description: "Education, achievements, and professional certifications.",
+            },
+            experience: {
+                title: `${data.hero.name} | Work Experience`,
+                description: "Career journey, roles, and impact across projects and teams.",
+            },
+            projects: {
+                title: `${data.hero.name} | Projects Portfolio`,
+                description: "Selected full stack projects with modern technologies and real-world impact.",
+            },
+            contact: {
+                title: `${data.hero.name} | Contact`,
+                description: "Get in touch for freelance work, collaborations, and project opportunities.",
+            },
+        };
+
+        document.title = seoByPage[activePage].title;
+        if (metaDescription) {
+            metaDescription.setAttribute("content", seoByPage[activePage].description);
+        }
+    }, [activePage, data.hero.name, data.hero.title, data.hero.subtitle]);
 
     const pageVariants = {
         initial: { opacity: 0, y: 20 },
@@ -75,7 +107,12 @@ const Index = () => {
 
                 {activePage === "contact" && (
                     <motion.div key="contact" variants={pageVariants} initial="initial" animate="enter" exit="exit">
-                        <Contact email={data.contact.email} linkedin={data.contact.linkedin} github={data.contact.github} />
+                        <Contact
+                            email={data.contact.email}
+                            location={data.contact.location}
+                            linkedin={data.contact.linkedin}
+                            github={data.contact.github}
+                        />
                     </motion.div>
                 )}
             </AnimatePresence>

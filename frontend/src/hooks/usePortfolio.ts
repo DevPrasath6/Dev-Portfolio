@@ -12,6 +12,7 @@ export interface Project {
 }
 
 export interface Skill {
+  id?: string;
   name: string;
   level: number;
   category: string;
@@ -21,6 +22,7 @@ export interface ExperienceItem {
   id: string;
   title: string;
   company: string;
+  location: string;
   period: string;
   description: string;
   current?: boolean;
@@ -95,6 +97,7 @@ export interface PortfolioData {
   testimonials: Testimonial[];
   contact: {
     email: string;
+    location?: string;
     linkedin?: string;
     github?: string;
   };
@@ -156,6 +159,7 @@ const defaultData: PortfolioData = {
   ],
   contact: {
     email: "devprasatha9@gmail.com",
+    location: "Available Worldwide (Remote)",
     linkedin: "https://linkedin.com/in/devprasatha9",
     github: "https://github.com/DevPrasath6",
   },
@@ -274,7 +278,7 @@ export function usePortfolio() {
     // Update a single experience by ID
     const updateExperience = async (id: string, updates: Partial<ExperienceItem>) => {
       try {
-        const updated = await portfolioApi.admin.updateExperience(id, updates);
+        const updated = await portfolioApi.admin.updateExperience(id, updates) as Partial<ExperienceItem>;
         setData(prev => ({
           ...prev,
           experiences: prev.experiences.map(e => e.id === id ? { ...e, ...updated } : e),
@@ -307,7 +311,7 @@ export function usePortfolio() {
 
   const addProject = async (project: Omit<Project, 'id'>) => {
     try {
-      const newProject = await portfolioApi.admin.createProject(project);
+      const newProject = await portfolioApi.admin.createProject(project) as Project;
       setData(prev => ({ ...prev, projects: [...prev.projects, newProject] }));
       return newProject;
     } catch (err) {
@@ -344,7 +348,7 @@ export function usePortfolio() {
 
   const addExperience = async (experience: Omit<ExperienceItem, 'id'>) => {
     try {
-      const newExperience = await portfolioApi.admin.createExperience(experience);
+      const newExperience = await portfolioApi.admin.createExperience(experience) as ExperienceItem;
       setData(prev => ({ ...prev, experiences: [...prev.experiences, newExperience] }));
       return newExperience;
     } catch (err) {
@@ -368,7 +372,7 @@ export function usePortfolio() {
 
   const addSkill = async (skill: Skill) => {
     try {
-      const newSkill = await portfolioApi.admin.createSkill(skill);
+      const newSkill = await portfolioApi.admin.createSkill(skill) as Skill;
       setData(prev => ({ ...prev, skills: [...prev.skills, newSkill] }));
       return newSkill;
     } catch (err) {
@@ -381,8 +385,8 @@ export function usePortfolio() {
     try {
       // Find the skill ID first (backend uses ID, not name)
       const skill = data.skills.find(s => s.name === name);
-      if (skill && 'id' in skill) {
-        await portfolioApi.admin.deleteSkill((skill as any).id);
+      if (skill?.id) {
+        await portfolioApi.admin.deleteSkill(skill.id);
       }
       setData(prev => ({
         ...prev,
@@ -396,7 +400,7 @@ export function usePortfolio() {
 
   const addTestimonial = async (testimonial: Omit<Testimonial, 'id'>) => {
     try {
-      const newTestimonial = await portfolioApi.admin.createTestimonial(testimonial);
+      const newTestimonial = await portfolioApi.admin.createTestimonial(testimonial) as Testimonial;
       setData(prev => ({ ...prev, testimonials: [...prev.testimonials, newTestimonial] }));
       return newTestimonial;
     } catch (err) {
@@ -421,7 +425,7 @@ export function usePortfolio() {
   // Education CRUD
   const addEducation = async (education: Omit<Education, 'id'>) => {
     try {
-      const newEducation = await portfolioApi.admin.createEducation(education);
+      const newEducation = await portfolioApi.admin.createEducation(education) as Education;
       setData(prev => ({ ...prev, education: [...prev.education, newEducation] }));
       return newEducation;
     } catch (err) {
@@ -432,7 +436,7 @@ export function usePortfolio() {
 
   const updateEducation = async (id: string, education: Partial<Education>) => {
     try {
-      const updatedEducation = await portfolioApi.admin.updateEducation(id, education);
+      const updatedEducation = await portfolioApi.admin.updateEducation(id, education) as Education;
       setData(prev => ({
         ...prev,
         education: prev.education.map(e => e.id === id ? updatedEducation : e),
@@ -460,7 +464,7 @@ export function usePortfolio() {
   // Certifications CRUD
   const addCertification = async (certification: Omit<Certification, 'id'>) => {
     try {
-      const newCertification = await portfolioApi.admin.createCertification(certification);
+      const newCertification = await portfolioApi.admin.createCertification(certification) as Certification;
       setData(prev => ({ ...prev, certifications: [...prev.certifications, newCertification] }));
       return newCertification;
     } catch (err) {
@@ -471,7 +475,7 @@ export function usePortfolio() {
 
   const updateCertification = async (id: string, certification: Partial<Certification>) => {
     try {
-      const updatedCertification = await portfolioApi.admin.updateCertification(id, certification);
+      const updatedCertification = await portfolioApi.admin.updateCertification(id, certification) as Certification;
       setData(prev => ({
         ...prev,
         certifications: prev.certifications.map(c => c.id === id ? updatedCertification : c),
@@ -499,7 +503,7 @@ export function usePortfolio() {
   // Achievements CRUD
   const addAchievement = async (achievement: Omit<Achievement, 'id'>) => {
     try {
-      const newAchievement = await portfolioApi.admin.createAchievement(achievement);
+      const newAchievement = await portfolioApi.admin.createAchievement(achievement) as Achievement;
       setData(prev => ({ ...prev, achievements: [...prev.achievements, newAchievement] }));
       return newAchievement;
     } catch (err) {
@@ -510,7 +514,7 @@ export function usePortfolio() {
 
   const updateAchievement = async (id: string, achievement: Partial<Achievement>) => {
     try {
-      const updatedAchievement = await portfolioApi.admin.updateAchievement(id, achievement);
+      const updatedAchievement = await portfolioApi.admin.updateAchievement(id, achievement) as Achievement;
       setData(prev => ({
         ...prev,
         achievements: prev.achievements.map(a => a.id === id ? updatedAchievement : a),
@@ -545,7 +549,7 @@ export function usePortfolio() {
 
   const updateStats = async (newStats: Partial<Stats>) => {
     try {
-      const updatedStats = await portfolioApi.admin.updateStats(newStats);
+      const updatedStats = await portfolioApi.admin.updateStats(newStats) as Stats;
       setData(prev => ({ ...prev, stats: updatedStats }));
       return updatedStats;
     } catch (error) {

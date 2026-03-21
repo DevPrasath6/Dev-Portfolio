@@ -8,11 +8,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
     Trash2, Plus, Save, ArrowLeft, LogOut, Edit2, X, Check,
     User, Briefcase, Code, Star, Mail, FolderOpen, GraduationCap,
-    Building, Calendar, Link as LinkIcon, Github, ExternalLink, Award, Trophy
+    Building, Calendar, Link as LinkIcon, Github, ExternalLink, Award, Trophy, MapPin
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
 import { AdminLogin } from '@/components/admin/AdminLogin';
+import { portfolioApi } from '@/lib/api';
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
@@ -82,6 +83,7 @@ const Admin = () => {
     const [newExperience, setNewExperience] = useState<Omit<ExperienceItem, 'id'>>({
         title: '',
         company: '',
+        location: '',
         period: '',
         description: '',
         current: false,
@@ -244,7 +246,7 @@ const Admin = () => {
         await addExperience(newExperience);
         // Refetch experiences from backend
         await refetchExperiences();
-        setNewExperience({ title: '', company: '', period: '', description: '', current: false });
+        setNewExperience({ title: '', company: '', location: '', period: '', description: '', current: false });
         toast({ title: 'Experience added!' });
     };
 
@@ -825,14 +827,26 @@ const Admin = () => {
                                             className="bg-input border-border"
                                         />
                                     </div>
-                                    <div className="flex items-center gap-2 pt-8">
-                                        <Switch
-                                            id="current-position"
-                                            checked={newExperience.current}
-                                            onCheckedChange={checked => setNewExperience(prev => ({ ...prev, current: checked }))}
+                                    <div className="space-y-2">
+                                        <Label className="flex items-center gap-2">
+                                            <Building className="w-4 h-4" />
+                                            Location
+                                        </Label>
+                                        <Input
+                                            placeholder="Chennai, India"
+                                            value={newExperience.location}
+                                            onChange={e => setNewExperience(prev => ({ ...prev, location: e.target.value }))}
+                                            className="bg-input border-border"
                                         />
-                                        <Label htmlFor="current-position">Current Position</Label>
                                     </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <Switch
+                                        id="current-position"
+                                        checked={newExperience.current}
+                                        onCheckedChange={checked => setNewExperience(prev => ({ ...prev, current: checked }))}
+                                    />
+                                    <Label htmlFor="current-position">Current Position</Label>
                                 </div>
                                 <div className="space-y-2">
                                     <Label>Description</Label>
@@ -889,6 +903,14 @@ const Admin = () => {
                                                                 className="bg-input border-border"
                                                                 placeholder="Period"
                                                             />
+                                                            <Input
+                                                                value={editExperienceData.location}
+                                                                onChange={e => setEditExperienceData(prev => prev ? { ...prev, location: e.target.value } : null)}
+                                                                className="bg-input border-border"
+                                                                placeholder="Location"
+                                                            />
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
                                                             <div className="flex items-center gap-2">
                                                                 <Switch
                                                                     checked={editExperienceData.current}
@@ -1502,7 +1524,7 @@ const Admin = () => {
                                                 <Label>Type</Label>
                                                 <select
                                                     value={newAchievement.type}
-                                                    onChange={e => setNewAchievement(prev => ({ ...prev, type: e.target.value as any }))}
+                                                    onChange={e => setNewAchievement(prev => ({ ...prev, type: e.target.value as Achievement['type'] }))}
                                                     className="w-full px-3 py-2 bg-input border border-border rounded-md"
                                                 >
                                                     <option value="award">Award</option>
@@ -1561,7 +1583,7 @@ const Admin = () => {
                                                                     />
                                                                     <select
                                                                         value={editAchievementData.type}
-                                                                        onChange={e => setEditAchievementData(prev => prev ? { ...prev, type: e.target.value as any } : null)}
+                                                                        onChange={e => setEditAchievementData(prev => prev ? { ...prev, type: e.target.value as Achievement['type'] } : null)}
                                                                         className="w-full px-3 py-2 bg-input border border-border rounded-md"
                                                                     >
                                                                         <option value="award">Award</option>
@@ -1776,6 +1798,18 @@ const Admin = () => {
                                         onChange={e => setContact(prev => ({ ...prev, email: e.target.value }))}
                                         className="bg-input border-border"
                                         placeholder="hello@example.com"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="flex items-center gap-2">
+                                        <MapPin className="w-4 h-4" />
+                                        Location
+                                    </Label>
+                                    <Input
+                                        value={contact.location || ''}
+                                        onChange={e => setContact(prev => ({ ...prev, location: e.target.value }))}
+                                        className="bg-input border-border"
+                                        placeholder="Chennai, India / Available Worldwide"
                                     />
                                 </div>
                                 <Separator />
