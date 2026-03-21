@@ -16,7 +16,7 @@ interface CVProps {
     education: Education[];
     certifications: Certification[];
     achievements: Achievement[];
-    stats?: {
+    stats: {
         cvYearsExperience: string;
         cvProjects: string;
         cvCertifications: string;
@@ -213,10 +213,10 @@ export function CV({ education, certifications, achievements, stats }: CVProps) 
                     <h3 className="text-base font-semibold mb-4 text-center">Career Highlights</h3>
                     <div className="grid grid-cols-4 gap-4">
                         {[
-                            { value: stats?.cvYearsExperience || "7+", label: "Years Experience" },
-                            { value: stats?.cvProjects || "100+", label: "Projects" },
-                            { value: stats?.cvCertifications || "15+", label: "Certifications" },
-                            { value: stats?.cvClients || "50+", label: "Clients" },
+                            { value: stats.cvYearsExperience, label: "Years Experience" },
+                            { value: stats.cvProjects, label: "Projects" },
+                            { value: stats.cvCertifications, label: "Certifications" },
+                            { value: stats.cvClients, label: "Clients" },
                         ].map((stat) => (
                             <div key={stat.label} className="text-center p-3 rounded-xl bg-background/50">
                                 <div className="text-xl font-display font-bold text-gradient">{stat.value}</div>

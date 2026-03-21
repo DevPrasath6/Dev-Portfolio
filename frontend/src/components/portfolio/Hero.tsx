@@ -1,24 +1,29 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles, Github, Linkedin, Mail } from "lucide-react";
 import { useEffect, useState } from "react";
-import type { ActivePage } from "@/pages/Index";
 import { InfiniteCarousel } from "./InfiniteCarousel";
 import { Certifications, Certification } from "./Certifications";
+
+type ActivePage = "home" | "cv" | "experience" | "projects" | "contact";
 
 interface HeroProps {
     name: string;
     title: string;
     subtitle: string;
+    badgeText: string;
     setActivePage: (page: ActivePage) => void;
     certifications: Certification[];
-    stats?: {
+    email?: string;
+    linkedin?: string;
+    github?: string;
+    stats: {
         heroYearsExperience: string;
         heroProjectsDelivered: string;
         heroHappyClients: string;
     };
 }
 
-export function Hero({ name, title, subtitle, setActivePage, certifications, stats }: HeroProps) {
+export function Hero({ name, title, subtitle, badgeText, setActivePage, certifications, email, linkedin, github, stats }: HeroProps) {
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
     useEffect(() => {
@@ -33,10 +38,16 @@ export function Hero({ name, title, subtitle, setActivePage, certifications, sta
     }, []);
 
     const heroStats = [
-        { value: stats?.heroYearsExperience || "2+", label: "Years Experience" },
-        { value: stats?.heroProjectsDelivered || "10", label: "Projects Delivered" },
-        { value: stats?.heroHappyClients || "7", label: "Happy Clients" },
+        { value: stats.heroYearsExperience, label: "Years Experience" },
+        { value: stats.heroProjectsDelivered, label: "Projects Delivered" },
+        { value: stats.heroHappyClients, label: "Happy Clients" },
     ];
+
+    const socialLinks = [
+        github ? { icon: Github, href: github, label: "GitHub" } : null,
+        linkedin ? { icon: Linkedin, href: linkedin, label: "LinkedIn" } : null,
+        email ? { icon: Mail, href: `mailto:${email}`, label: "Email" } : null,
+    ].filter(Boolean) as Array<{ icon: typeof Github; href: string; label: string }>;
 
     return (
         <div className="relative">
@@ -62,7 +73,7 @@ export function Hero({ name, title, subtitle, setActivePage, certifications, sta
                         className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full glass mb-10"
                     >
                         <Sparkles className="w-4 h-4 text-purple-400" />
-                        <span className="text-sm font-medium text-muted-foreground">Available for Freelance Projects</span>
+                        <span className="text-sm font-medium text-muted-foreground">{badgeText}</span>
                         <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
                     </motion.div>
 
@@ -151,14 +162,12 @@ export function Hero({ name, title, subtitle, setActivePage, certifications, sta
                         transition={{ delay: 1.2 }}
                         className="flex items-center justify-center gap-4"
                     >
-                        {[
-                            { icon: Github, href: "https://github.com/DevPrasath6/", label: "GitHub" },
-                            { icon: Linkedin, href: "https://www.linkedin.com/in/devprasatha9/", label: "LinkedIn" },
-                            { icon: Mail, href: "devprasatha9@gmail.com", label: "Email" },
-                        ].map((social) => (
+                        {socialLinks.map((social) => (
                             <motion.a
                                 key={social.label}
                                 href={social.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 whileHover={{ scale: 1.1, y: -3 }}
                                 whileTap={{ scale: 0.95 }}
                                 className="w-12 h-12 rounded-xl glass flex items-center justify-center text-muted-foreground hover:text-purple-400 transition-colors"

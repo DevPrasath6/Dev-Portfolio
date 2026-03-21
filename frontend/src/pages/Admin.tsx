@@ -129,17 +129,7 @@ const Admin = () => {
     const [editAchievementData, setEditAchievementData] = useState<Achievement | null>(null);
 
     // Stats states
-    const [stats, setStats] = useState(data.stats || {
-        heroYearsExperience: '2+',
-        heroProjectsDelivered: '10',
-        heroHappyClients: '7',
-        cvYearsExperience: '7+',
-        cvProjects: '100+',
-        cvCertifications: '15+',
-        cvClients: '50+',
-    });
-
-    // ...existing code...
+    const [stats, setStats] = useState(data.stats);
 
     // Check if already authenticated
     useEffect(() => {
@@ -432,8 +422,6 @@ const Admin = () => {
         setEditAchievementData(null);
     };
 
-    // ...existing code...
-
     if (!isAuthenticated) {
         return <AdminLogin onLogin={() => setIsAuthenticated(true)} />;
     }
@@ -531,6 +519,16 @@ const Admin = () => {
                                         onChange={e => setHero(prev => ({ ...prev, subtitle: e.target.value }))}
                                         className="bg-input border-border min-h-[100px]"
                                         placeholder="A brief description about yourself..."
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label htmlFor="hero-badge">Availability Badge Text</Label>
+                                    <Input
+                                        id="hero-badge"
+                                        value={hero.description || ''}
+                                        onChange={e => setHero(prev => ({ ...prev, description: e.target.value }))}
+                                        className="bg-input border-border"
+                                        placeholder="Available for Freelance Projects"
                                     />
                                 </div>
                                 <Button onClick={handleSaveHero} className="gap-2">
@@ -1631,8 +1629,6 @@ const Admin = () => {
                             </TabsContent>
                         </Tabs>
                     </TabsContent>
-
-                    {/* ...existing code... */}
 
                     {/* Stats Section */}
                     <TabsContent value="stats" className="space-y-6">

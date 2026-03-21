@@ -83,6 +83,7 @@ export interface PortfolioData {
     name: string;
     title: string;
     subtitle: string;
+    description: string;
   };
   about: {
     bio: string;
@@ -100,7 +101,7 @@ export interface PortfolioData {
   education: Education[];
   certifications: Certification[];
   achievements: Achievement[];
-  stats?: Stats;
+  stats: Stats;
 }
 
 const defaultData: PortfolioData = {
@@ -108,6 +109,7 @@ const defaultData: PortfolioData = {
     name: "Dev Prasath",
     title: "Full Stack Developer",
     subtitle: "I craft beautiful digital experiences with code and creativity, turning ideas into powerful web applications",
+    description: "Available for Freelance Projects",
   },
   about: {
     bio: "I'm a passionate full-stack developer with 5+ years of experience building modern web applications. I specialize in React, TypeScript, and Node.js, with a keen eye for design and user experience. When I'm not coding, you'll find me exploring new technologies, contributing to open-source projects, or sharing knowledge with the developer community.",
@@ -188,7 +190,7 @@ export function usePortfolio() {
 
         // Transform backend data to match frontend structure
         const transformedData: PortfolioData = {
-          hero: portfolioData.hero || defaultData.hero,
+          hero: { ...defaultData.hero, ...(portfolioData.hero || {}) },
           about: {
             bio: portfolioData.hero?.bio || defaultData.about.bio,
             image: portfolioData.hero?.image || defaultData.about.image,
