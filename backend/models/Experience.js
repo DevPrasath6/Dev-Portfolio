@@ -15,7 +15,27 @@ const experienceSchema = new mongoose.Schema({
   },
   period: {
     type: String,
-    required: [true, 'Period is required']
+    default: ''
+  },
+  startDate: {
+    type: String,
+    default: ''
+  },
+  endDate: {
+    type: String,
+    default: ''
+  },
+  certificateUrl: {
+    type: String,
+    default: ''
+  },
+  certificateName: {
+    type: String,
+    default: ''
+  },
+  certificateImageUrl: {
+    type: String,
+    default: ''
   },
   description: {
     type: String,

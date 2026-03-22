@@ -15,9 +15,10 @@ async function apiRequest<T>(
   const token = authToken.get();
 
   const headers: HeadersInit = {
-    'Content-Type': 'application/json',
     ...options.headers,
   };
+
+  headers['Content-Type'] = 'application/json';
 
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;

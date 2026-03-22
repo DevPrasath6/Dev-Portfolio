@@ -8,7 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
     Trash2, Plus, Save, ArrowLeft, LogOut, Edit2, X, Check,
     User, Briefcase, Code, Star, Mail, FolderOpen, GraduationCap,
-    Building, Calendar, Link as LinkIcon, Github, ExternalLink, Award, Trophy, MapPin
+    Building, Calendar, Link as LinkIcon, Github, ExternalLink, Award, Trophy, MapPin, Image as ImageIcon
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Link } from 'react-router-dom';
@@ -85,6 +85,11 @@ const Admin = () => {
         company: '',
         location: '',
         period: '',
+        startDate: '',
+        endDate: '',
+        certificateUrl: '',
+        certificateName: '',
+        certificateImageUrl: '',
         description: '',
         current: false,
     });
@@ -246,7 +251,19 @@ const Admin = () => {
         await addExperience(newExperience);
         // Refetch experiences from backend
         await refetchExperiences();
-        setNewExperience({ title: '', company: '', location: '', period: '', description: '', current: false });
+        setNewExperience({
+            title: '',
+            company: '',
+            location: '',
+            period: '',
+            startDate: '',
+            endDate: '',
+            certificateUrl: '',
+            certificateName: '',
+            certificateImageUrl: '',
+            description: '',
+            current: false
+        });
         toast({ title: 'Experience added!' });
     };
 
@@ -818,15 +835,30 @@ const Admin = () => {
                                     <div className="space-y-2">
                                         <Label className="flex items-center gap-2">
                                             <Calendar className="w-4 h-4" />
-                                            Period
+                                            Start Date
                                         </Label>
                                         <Input
-                                            placeholder="2020 - Present"
-                                            value={newExperience.period}
-                                            onChange={e => setNewExperience(prev => ({ ...prev, period: e.target.value }))}
+                                            type="date"
+                                            value={newExperience.startDate || ''}
+                                            onChange={e => setNewExperience(prev => ({ ...prev, startDate: e.target.value }))}
                                             className="bg-input border-border"
                                         />
                                     </div>
+                                    <div className="space-y-2">
+                                        <Label className="flex items-center gap-2">
+                                            <Calendar className="w-4 h-4" />
+                                            End Date
+                                        </Label>
+                                        <Input
+                                            type="date"
+                                            value={newExperience.endDate || ''}
+                                            onChange={e => setNewExperience(prev => ({ ...prev, endDate: e.target.value }))}
+                                            className="bg-input border-border"
+                                            disabled={newExperience.current}
+                                        />
+                                    </div>
+                                </div>
+                                <div className="grid md:grid-cols-2 gap-4">
                                     <div className="space-y-2">
                                         <Label className="flex items-center gap-2">
                                             <Building className="w-4 h-4" />
@@ -839,12 +871,59 @@ const Admin = () => {
                                             className="bg-input border-border"
                                         />
                                     </div>
+                                    <div className="space-y-2">
+                                        <Label className="flex items-center gap-2">
+                                            <LinkIcon className="w-4 h-4" />
+                                            Certificate Name
+                                        </Label>
+                                        <Input
+                                            placeholder="Offer Letter / Completion Certificate"
+                                            value={newExperience.certificateName || ''}
+                                            onChange={e => setNewExperience(prev => ({ ...prev, certificateName: e.target.value }))}
+                                            className="bg-input border-border"
+                                        />
+                                    </div>
                                 </div>
+                                <div className="space-y-2">
+                                    <Label className="flex items-center gap-2">
+                                        <LinkIcon className="w-4 h-4" />
+                                        Certificate File URL
+                                    </Label>
+                                    <Input
+                                        placeholder="https://drive.google.com/..."
+                                        value={newExperience.certificateUrl || ''}
+                                        onChange={e => setNewExperience(prev => ({ ...prev, certificateUrl: e.target.value }))}
+                                        className="bg-input border-border"
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <Label className="flex items-center gap-2">
+                                        <ImageIcon className="w-4 h-4" />
+                                        Certificate Image URL
+                                    </Label>
+                                    <Input
+                                        placeholder="https://res.cloudinary.com/..."
+                                        value={newExperience.certificateImageUrl || ''}
+                                        onChange={e => setNewExperience(prev => ({ ...prev, certificateImageUrl: e.target.value }))}
+                                        className="bg-input border-border"
+                                    />
+                                </div>
+                                {newExperience.certificateImageUrl && (
+                                    <img
+                                        src={newExperience.certificateImageUrl}
+                                        alt="Certificate preview"
+                                        className="w-full max-w-sm rounded-lg border border-border/70"
+                                    />
+                                )}
                                 <div className="flex items-center gap-2">
                                     <Switch
                                         id="current-position"
                                         checked={newExperience.current}
-                                        onCheckedChange={checked => setNewExperience(prev => ({ ...prev, current: checked }))}
+                                        onCheckedChange={checked => setNewExperience(prev => ({
+                                            ...prev,
+                                            current: checked,
+                                            endDate: checked ? '' : prev.endDate,
+                                        }))}
                                     />
                                     <Label htmlFor="current-position">Current Position</Label>
                                 </div>
@@ -898,23 +977,63 @@ const Admin = () => {
                                                         </div>
                                                         <div className="grid md:grid-cols-2 gap-4">
                                                             <Input
-                                                                value={editExperienceData.period}
-                                                                onChange={e => setEditExperienceData(prev => prev ? { ...prev, period: e.target.value } : null)}
+                                                                type="date"
+                                                                value={editExperienceData.startDate || ''}
+                                                                onChange={e => setEditExperienceData(prev => prev ? { ...prev, startDate: e.target.value } : null)}
                                                                 className="bg-input border-border"
-                                                                placeholder="Period"
+                                                                placeholder="Start Date"
                                                             />
+                                                            <Input
+                                                                type="date"
+                                                                value={editExperienceData.endDate || ''}
+                                                                onChange={e => setEditExperienceData(prev => prev ? { ...prev, endDate: e.target.value } : null)}
+                                                                className="bg-input border-border"
+                                                                placeholder="End Date"
+                                                                disabled={editExperienceData.current}
+                                                            />
+                                                        </div>
+                                                        <div className="grid md:grid-cols-2 gap-4">
                                                             <Input
                                                                 value={editExperienceData.location}
                                                                 onChange={e => setEditExperienceData(prev => prev ? { ...prev, location: e.target.value } : null)}
                                                                 className="bg-input border-border"
                                                                 placeholder="Location"
                                                             />
+                                                            <Input
+                                                                value={editExperienceData.certificateName || ''}
+                                                                onChange={e => setEditExperienceData(prev => prev ? { ...prev, certificateName: e.target.value } : null)}
+                                                                className="bg-input border-border"
+                                                                placeholder="Certificate Name"
+                                                            />
                                                         </div>
+                                                        <Input
+                                                            value={editExperienceData.certificateUrl || ''}
+                                                            onChange={e => setEditExperienceData(prev => prev ? { ...prev, certificateUrl: e.target.value } : null)}
+                                                            className="bg-input border-border"
+                                                            placeholder="Certificate File URL"
+                                                        />
+                                                        <Input
+                                                            value={editExperienceData.certificateImageUrl || ''}
+                                                            onChange={e => setEditExperienceData(prev => prev ? { ...prev, certificateImageUrl: e.target.value } : null)}
+                                                            className="bg-input border-border"
+                                                            placeholder="Certificate Image URL"
+                                                        />
+                                                        {editExperienceData.certificateImageUrl && (
+                                                            <img
+                                                                src={editExperienceData.certificateImageUrl}
+                                                                alt="Certificate preview"
+                                                                className="w-full max-w-sm rounded-lg border border-border/70"
+                                                            />
+                                                        )}
                                                         <div className="flex items-center gap-2">
                                                             <div className="flex items-center gap-2">
                                                                 <Switch
                                                                     checked={editExperienceData.current}
-                                                                    onCheckedChange={checked => setEditExperienceData(prev => prev ? { ...prev, current: checked } : null)}
+                                                                    onCheckedChange={checked => setEditExperienceData(prev => prev ? {
+                                                                        ...prev,
+                                                                        current: checked,
+                                                                        endDate: checked ? '' : prev.endDate,
+                                                                    } : null)}
                                                                 />
                                                                 <Label>Current Position</Label>
                                                             </div>
@@ -944,7 +1063,25 @@ const Admin = () => {
                                                                 {exp.current && <Badge className="bg-primary/20 text-primary text-xs">Current</Badge>}
                                                             </div>
                                                             <p className="text-sm text-primary">{exp.company}</p>
-                                                            <p className="text-xs text-muted-foreground">{exp.period}</p>
+                                                            <p className="text-xs text-muted-foreground">
+                                                                {exp.startDate || exp.endDate
+                                                                    ? `${exp.startDate ? new Date(exp.startDate).toLocaleDateString() : ''} - ${exp.current ? 'Present' : (exp.endDate ? new Date(exp.endDate).toLocaleDateString() : 'Present')}`
+                                                                    : exp.period}
+                                                            </p>
+                                                            {exp.certificateUrl && (
+                                                                <a href={exp.certificateUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">
+                                                                    {exp.certificateName || 'View Certificate'}
+                                                                </a>
+                                                            )}
+                                                            {exp.certificateImageUrl && (
+                                                                <div className="mt-2">
+                                                                    <img
+                                                                        src={exp.certificateImageUrl}
+                                                                        alt={`${exp.certificateName || 'Certificate'} image`}
+                                                                        className="h-20 w-auto rounded-md border border-border/70"
+                                                                    />
+                                                                </div>
+                                                            )}
                                                             <p className="text-sm text-muted-foreground mt-2 line-clamp-2">{exp.description}</p>
                                                         </div>
                                                         <div className="flex gap-2 shrink-0">

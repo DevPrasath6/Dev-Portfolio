@@ -6,6 +6,11 @@ interface ExperienceItem {
     title: string;
     company: string;
     period: string;
+    startDate?: string;
+    endDate?: string;
+    certificateUrl?: string;
+    certificateName?: string;
+    certificateImageUrl?: string;
     description: string;
     current?: boolean;
 }
@@ -15,6 +20,15 @@ interface ExperienceProps {
 }
 
 export function Experience({ experiences }: ExperienceProps) {
+    const getDateRangeLabel = (exp: ExperienceItem) => {
+        if (exp.startDate || exp.endDate) {
+            const start = exp.startDate ? new Date(exp.startDate).toLocaleDateString() : "";
+            const end = exp.current ? "Present" : (exp.endDate ? new Date(exp.endDate).toLocaleDateString() : "Present");
+            return `${start} - ${end}`.trim();
+        }
+        return exp.period;
+    };
+
     return (
         <section className="min-h-screen py-20 px-6 pt-24 relative overflow-hidden">
             {/* Background decorations */}
@@ -88,7 +102,7 @@ export function Experience({ experiences }: ExperienceProps) {
                                         {/* Period badge */}
                                         <div className="flex items-center gap-2 text-muted-foreground text-xs bg-background/50 px-3 py-2 rounded-lg shrink-0">
                                             <Calendar className="w-3.5 h-3.5" />
-                                            <span>{exp.period}</span>
+                                            <span>{getDateRangeLabel(exp)}</span>
                                         </div>
                                     </div>
 
@@ -113,6 +127,30 @@ export function Experience({ experiences }: ExperienceProps) {
                                             </div>
                                         ))}
                                     </div>
+
+                                    {exp.certificateUrl && (
+                                        <div className="mt-4">
+                                            <a
+                                                href={exp.certificateUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                className="inline-flex items-center gap-2 text-xs text-purple-400 hover:text-purple-300"
+                                            >
+                                                {exp.certificateName || "View Certificate"}
+                                                <ExternalLink className="w-3.5 h-3.5" />
+                                            </a>
+                                        </div>
+                                    )}
+
+                                    {exp.certificateImageUrl && (
+                                        <div className="mt-3">
+                                            <img
+                                                src={exp.certificateImageUrl}
+                                                alt={exp.certificateName || "Certificate image"}
+                                                className="w-full max-w-sm rounded-lg border border-purple-500/20"
+                                            />
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </motion.div>

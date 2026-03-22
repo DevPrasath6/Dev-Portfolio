@@ -24,6 +24,11 @@ export interface ExperienceItem {
   company: string;
   location: string;
   period: string;
+  startDate?: string;
+  endDate?: string;
+  certificateUrl?: string;
+  certificateName?: string;
+  certificateImageUrl?: string;
   description: string;
   current?: boolean;
 }
